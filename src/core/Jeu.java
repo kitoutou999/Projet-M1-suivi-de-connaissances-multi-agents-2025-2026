@@ -12,4 +12,6 @@ public abstract class Jeu {
     public abstract Etat nextState(Etat etat, ActionJointe actions);
 
     public abstract List<Action> getActionsPossibles(Agent agent, Etat etat);
+
+    public abstract void makeObservation(Agent agent,ActionJointe actions,Etat nextState);
 }

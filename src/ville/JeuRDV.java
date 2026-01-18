@@ -9,12 +9,14 @@ public class JeuRDV extends Jeu {
     private final String lieuRDV;
     private final List<Agent> agents;
     private final EtatRDV etatInitial;
+    private final Historique historique;
 
     public JeuRDV(Ville ville, String lieuRDV, List<Agent> agents, Map<Agent, String> positionsInitiales) {
         this.ville = ville;
         this.lieuRDV = lieuRDV;
         this.agents = agents;
         this.etatInitial = new EtatRDV(positionsInitiales, new HashMap<>());
+        this.historique = new Historique();
     }
 
     @Override
@@ -81,5 +83,10 @@ public class JeuRDV extends Jeu {
         actions.add(new ActionRester());
 
         return actions;
+    }
+
+    @Override 
+    public void makeObservation(Agent agent,ActionJointe actions,Etat nextState){
+        this.historique.addToHistorique(action.getAction(agent),new ObservationVille(agent,nextState,actions));
     }
 }

@@ -4,13 +4,19 @@ import core.*;
 
 public class EtatHanabi implements Etat {
     private Map<Agent,List<Carte>> mainsAgents; 
-    private Deque<Carte> jeu; 
+    private Map<String,Deque<Carte>> jeu; 
     private int nbErreur;
+    private List<String> listMessage;
 
-    public EtatHanabi(Map<Agent,List<Carte>> mainsAgents,Deque<Carte> jeu,int nbErreur){
+    public EtatHanabi(Map<Agent,List<Carte>> mainsAgents,Map<String,Deque<Carte>> jeu,int nbErreur,List<String> listMessage){
         this.mainsAgents = new HashMap<>(mainsAgents);
-        this.jeu = new ArrayDeque<>(jeu);
+        this.jeu = new HashMap<>(jeu);
         this.nbErreur = nbErreur;
+        this.listMessage = new ArrayList<>(listMessage);
+    }
+
+    public Map<Agent,List<Carte>> getMainsAgents(){
+        return mainsAgents;
     }
 
     public List<Carte> getMainAgent(Agent agent){
@@ -21,8 +27,12 @@ public class EtatHanabi implements Etat {
         return nbErreur;
     }
 
-    public Deque<Carte> GetJeu(){
+    public Map<String,Deque<Carte>> getJeu(){
         return jeu;
+    }
+
+    public List<String> getListMessage(){
+        return listMessage;
     }
 
     @Override
@@ -38,6 +48,13 @@ public class EtatHanabi implements Etat {
             }
             res += "\n";
         }
+        if(!listMessage.isEmpty()){
+            res += "Les messages "+listMessage + "\n";
+        }
+
+        res += "Le jeu : "+jeu + "\n";
+        res += "Le nombre d'erreur est de " + nbErreur + "\n";
+    
         return res;
     }
 

@@ -1,10 +1,10 @@
 package hanabi;
 import java.util.*;
 
-public class ActionPoser implements ActionHanabi{
+public record ActionPoser(int posCarte) implements ActionHanabi{
     @Override
     public String toString() {
-        return "Action poser une carte";
+        return "Action poser la carte à la position " + posCarte;
     }
 
 }

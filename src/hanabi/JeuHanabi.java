@@ -11,7 +11,18 @@ public class JeuHanabi extends Jeu {
     public JeuHanabi(Hanabi hanabi,List<Agent> agents,Map<Agent,List<Carte>> mainsAgents){
         this.hanabi = hanabi;
         this.agents = agents;
-        this.etatInitial = new EtatHanabi(mainsAgents,new ArrayDeque<>(),0);
+        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,new ArrayList<>());
+    }
+
+
+    //Initialise une pile pour chaque couleur
+    private Map<String,Deque<Carte>> creerJeu(){
+        Map<String,Deque<Carte>> jeu = new HashMap<>(); 
+
+        for(String c : hanabi.getListCouleur()){
+            jeu.put(c,new ArrayDeque<>());
+        }
+        return jeu;
     }
 
     @Override
@@ -21,21 +32,75 @@ public class JeuHanabi extends Jeu {
 
     @Override
     public boolean isFinal(Etat etat) {
+        EtatHanabi e = (EtatHanabi) etat;
+        boolean estGagne = false; //Faire estGagne
+        if (hanabi.getPioche().size() <= 0 || e.getNbErreur() >= hanabi.getNbErreurMax() || estGagne){  //Si la pioche est vide ou Si il y a eu trop d'erreur ou Si la partie est gagné (chaque couleur est complete)
+            return true;
+        }
         return false;
     }
 
     @Override
     public Etat nextState(Etat etat, ActionJointe actions) {
         EtatHanabi e = (EtatHanabi) etat;
-        return e;
+
+        Map<Agent,List<Carte>> newMainsAgents = new HashMap<>(e.getMainsAgents()); //Créer une copie des mains de agents pour faire les nouvelles
+        for(Agent key : new HashSet<>(newMainsAgents.keySet())) {
+            newMainsAgents.put(key, new ArrayList<>(newMainsAgents.get(key)));
+        }
+
+        Map<String,Deque<Carte>> newJeu = new HashMap<>(e.getJeu()); //Créer une copie du jeu pour faire le nouveau
+        for(String key : new HashSet<>(newJeu.keySet())) {
+            newJeu.put(key, new ArrayDeque<>(newJeu.get(key)));
+        }
+
+        List<String> newListMessage = new ArrayList<>(e.getListMessage()); //Créer une copie de la list des messages pour faire la nouvelle
+        int newNbErreur = e.getNbErreur(); //Créer une copie du nombre d'erreur pour mettre à jour
+
+        for (Agent agent : actions.getAgents()) {
+            Action action = actions.getAction(agent);
+
+            if (action instanceof ActionDefausse ad) { //Si défausse
+                int posCarte = ad.posCarte();
+                Carte carteDefausse = (newMainsAgents.get(agent)).get(posCarte);
+                newListMessage.add("Defausse de la carte " + carteDefausse);
+                (newMainsAgents.get(agent)).set(posCarte,hanabi.retireCarte()); //L'agent pioche une nouvelle carte
+
+            } else if (action instanceof ActionMessage am) { //Si méssage
+                String message = am.message();
+                newListMessage.add("Laisse message :" + message);
+
+            } else if (action instanceof ActionPoser ap) { //Si poser une carte
+                int posCarte = ap.posCarte();
+                Carte carte = (newMainsAgents.get(agent)).get(posCarte);
+                String couleurCarte = carte.getCouleur();
+
+                Deque<Carte> pile = newJeu.get(couleurCarte);
+
+                if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
+                    pile.push(carte);
+                }
+                else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes
+                    pile.push(carte);
+                }
+                else{ //Si l'agent s'est trompé
+                    newListMessage.add("Defausse de la carte " + carte); //Quand on se trompe,on défausse
+                    newNbErreur += 1;
+                }
+
+                (newMainsAgents.get(agent)).set(posCarte,hanabi.retireCarte()); //L'agent pioche une nouvelle carte
+
+            }
+        }
+        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,newListMessage);
     }
 
     @Override
     public List<Action> getActionsPossibles(Agent agent, Etat etat) {
         List<Action> actions = new ArrayList<>();
-        actions.add(new ActionMessage());
-        actions.add(new ActionDefausse());
-        actions.add(new ActionPoser());
+        actions.add(new ActionMessage("Coucou."));
+        actions.add(new ActionDefausse(0));
+        actions.add(new ActionPoser(0));
         return actions;
     }
 

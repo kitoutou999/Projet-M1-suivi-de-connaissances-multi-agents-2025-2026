@@ -5,6 +5,8 @@ import core.*;
 public class MainHanabi{
     public static void main(String[] args) {
 
+
+        //Créer un "Hanabi" (la boite de jeu)
         List<Integer> listNumero = new ArrayList<>(List.of(3,2,2,2,1));
         List<String> listCouleur = new ArrayList<>(List.of("rouge", "bleu", "vert","jaune","blanc"));
 
@@ -12,17 +14,17 @@ public class MainHanabi{
         for(String c : listCouleur){
             nombreCarte.put(c,listNumero);
         }
-
-        
-        Hanabi hanabi = new Hanabi(nombreCarte);
+        Hanabi hanabi = new Hanabi(nombreCarte,3);
 
         //System.out.println(hanabi.getPioche() + "\n");
 
+        //Créer les agents
         Agent a1 = new Agent("Alice");
         Agent a2 = new Agent("Bob");
         List<Agent> agents = List.of(a1, a2);
 
 
+        //Distribue les cartes aux agents 
         Map<Agent,List<Carte>> mainsAgents = new HashMap<>();
         for(Agent agent : agents){
             List<Carte> mainAgent = new ArrayList<>();
@@ -34,13 +36,16 @@ public class MainHanabi{
 
         //System.out.println(hanabi.getPioche() + "\n");
 
+        //Créer le jeu
         JeuHanabi jeu = new JeuHanabi(hanabi,agents,mainsAgents);
 
+        //Créer les politiques
         Map<Agent, Politique> politiques = new HashMap<>();
         politiques.put(a1, new PolitiqueRandom());
         politiques.put(a2, new PolitiqueRandom());
 
 
+        //Lance la simulation
         Simulateur simulateur = new Simulateur(jeu, politiques);
         simulateur.run(20);
 

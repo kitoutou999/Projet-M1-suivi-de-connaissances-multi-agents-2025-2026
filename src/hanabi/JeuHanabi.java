@@ -25,6 +25,19 @@ public class JeuHanabi extends Jeu {
         return jeu;
     }
 
+    private boolean estGagne(Map<String,Deque<Carte>> jeu){
+        for(Map.Entry<String,Deque<Carte>> entry : jeu.entrySet()){
+            String couleur = entry.getKey();
+            Deque<Carte> pile = entry.getValue();
+
+            if(pile.isEmpty() || pile.peek().getNumero() < hanabi.getValeurMaxDeC(couleur)){
+                return false;
+            }
+            
+        }
+        return true;
+    }
+
     @Override
     public Etat getInitialState() {
         return etatInitial;
@@ -33,7 +46,7 @@ public class JeuHanabi extends Jeu {
     @Override
     public boolean isFinal(Etat etat) {
         EtatHanabi e = (EtatHanabi) etat;
-        boolean estGagne = false; //Faire estGagne
+        boolean estGagne = estGagne(e.getJeu());
         if (hanabi.getPioche().size() <= 0 || e.getNbErreur() >= hanabi.getNbErreurMax() || estGagne){  //Si la pioche est vide ou Si il y a eu trop d'erreur ou Si la partie est gagné (chaque couleur est complete)
             return true;
         }

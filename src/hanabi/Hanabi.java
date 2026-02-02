@@ -4,12 +4,14 @@ import java.util.*;
 public class Hanabi {
     private List<Carte> pioche;
     private Map<String,List<Integer>> nombreCarte = new HashMap<>();
+    private Map<String,Integer> valeurMax = new HashMap<>();
     private int nbErreurMax;
 
-    public Hanabi(Map<String,List<Integer>> nombreCarte,int nbErreurMax){
+    public Hanabi(Map<String,List<Integer>> nombreCarte,int nbErreurMax,Map<String,Integer> valeurMax){
         this.nombreCarte = nombreCarte;
         this.pioche = creerPioche();
         this.nbErreurMax = nbErreurMax; 
+        this.valeurMax = valeurMax;
     }
 
     //Créer une pioche avec toute les cartes mélangées
@@ -45,6 +47,11 @@ public class Hanabi {
     public int getNbErreurMax(){
         return nbErreurMax;
     }
+
+    public int getValeurMaxDeC(String c){
+        return valeurMax.get(c);
+    }
+
 
     public List<String> getListCouleur(){
         return new ArrayList<>(nombreCarte.keySet());

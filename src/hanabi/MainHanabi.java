@@ -7,14 +7,17 @@ public class MainHanabi{
 
 
         //Créer un "Hanabi" (la boite de jeu)
-        List<Integer> listNumero = new ArrayList<>(List.of(3,2,2,2,1));
-        List<String> listCouleur = new ArrayList<>(List.of("rouge", "bleu", "vert","jaune","blanc"));
+        List<Integer> listNumero = new ArrayList<>(List.of(3,2,2,2,1)); // Vrai valeur pour Hanabi -> 3,2,2,2,1
+        List<String> listCouleur = new ArrayList<>(List.of("rouge","bleu","vert","jaune","blanc")); //Vrai valeur pour Hanabi -> "rouge","bleu","vert","jaune","blanc"
+
+        Map<String,Integer> valeurMax = new HashMap<>(); //Pour chaque couleur donne quelle valeur est la derniere possible 
 
         Map<String,List<Integer>> nombreCarte = new HashMap<>();
         for(String c : listCouleur){
             nombreCarte.put(c,listNumero);
+            valeurMax.put(c,listNumero.size());
         }
-        Hanabi hanabi = new Hanabi(nombreCarte,3);
+        Hanabi hanabi = new Hanabi(nombreCarte,3,valeurMax);
 
         //System.out.println(hanabi.getPioche() + "\n");
 

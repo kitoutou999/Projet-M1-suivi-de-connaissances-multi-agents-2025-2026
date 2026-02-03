@@ -1,4 +1,4 @@
-package core;
+package ville;
 
 import core.*;
 import java.util.*;

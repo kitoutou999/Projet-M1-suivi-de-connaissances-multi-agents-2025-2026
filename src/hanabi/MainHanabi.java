@@ -21,9 +21,13 @@ public class MainHanabi{
 
         //System.out.println(hanabi.getPioche() + "\n");
 
+        Map<Agent, Politique> politiques = new HashMap<>();
+
+        PolitiqueRandom politiqueRandom = new PolitiqueRandom();
+
         //Créer les agents
-        Agent a1 = new Agent("Alice");
-        Agent a2 = new Agent("Bob");
+        Agent a1 = new Agent(politiqueRandom,"Alice");
+        Agent a2 = new Agent(politiqueRandom,"Bob");
         List<Agent> agents = List.of(a1, a2);
 
 
@@ -44,8 +48,8 @@ public class MainHanabi{
 
         //Créer les politiques
         Map<Agent, Politique> politiques = new HashMap<>();
-        politiques.put(a1, new PolitiqueRandom());
-        politiques.put(a2, new PolitiqueRandom());
+        politiques.put(a1, politiqueRandom);
+        politiques.put(a2, politiqueRandom);
 
 
         //Lance la simulation

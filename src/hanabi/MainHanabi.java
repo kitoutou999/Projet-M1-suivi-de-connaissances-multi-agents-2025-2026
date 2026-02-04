@@ -21,13 +21,11 @@ public class MainHanabi{
 
         //System.out.println(hanabi.getPioche() + "\n");
 
-        Map<Agent, Politique> politiques = new HashMap<>();
-
         PolitiqueRandom politiqueRandom = new PolitiqueRandom();
 
         //Créer les agents
-        Agent a1 = new Agent(politiqueRandom,"Alice");
-        Agent a2 = new Agent(politiqueRandom,"Bob");
+        Agent a1 = new Agent("Alice");
+        Agent a2 = new Agent("Bob");
         List<Agent> agents = List.of(a1, a2);
 
 

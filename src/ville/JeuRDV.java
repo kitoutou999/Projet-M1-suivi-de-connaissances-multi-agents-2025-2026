@@ -9,14 +9,12 @@ public class JeuRDV extends Jeu {
     private final String lieuRDV;
     private final List<Agent> agents;
     private final EtatRDV etatInitial;
-    private final Historique historique;
 
     public JeuRDV(Ville ville, String lieuRDV, List<Agent> agents, Map<Agent, String> positionsInitiales) {
         this.ville = ville;
         this.lieuRDV = lieuRDV;
         this.agents = agents;
         this.etatInitial = new EtatRDV(positionsInitiales, new HashMap<>());
-        this.historique = new Historique();
     }
 
     @Override
@@ -56,7 +54,7 @@ public class JeuRDV extends Jeu {
                 if (ville.estOuvert(destination)) {
                     nouvellesPositions.put(agent, destination);
                 } else {
-                    System.out.println("Lieu fermé : " + destination + " (Agent " + agent.id() + " bloqué)");
+                    System.out.println("Lieu fermé : " + destination + " (Agent " + agent.getId() + " bloqué)");
                 }
             } else if (action instanceof ActionMessage am) {
                 nouveauxMessages.computeIfAbsent(positionActuelle, k -> new ArrayList<>()).add(am.contenu());
@@ -86,7 +84,7 @@ public class JeuRDV extends Jeu {
     }
 
     @Override 
-    public void makeObservation(Agent agent,ActionJointe actions,Etat nextState){
-        this.historique.addToHistorique(action.getAction(agent),new ObservationVille(agent,nextState,actions));
+    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState){
+        return new ObservationVille(agent,nextState,actions);
     }
 }

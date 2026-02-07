@@ -2,9 +2,9 @@ package core;
 import java.util.*;
 
 public class Agent{
-    Politique politique;
-    String id;
-    Historique historique;
+    private Politique politique;
+    private String id;
+    private Historique historique;
     public Agent(Politique politique,String id){
         this.politique = politique;
         this.id = id;
@@ -23,5 +23,8 @@ public class Agent{
     }
     public String getId(){
         return this.id;
+    }
+    public Historique getHistorique(){
+        return this.historique;
     }
 }

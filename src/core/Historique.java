@@ -16,4 +16,14 @@ public class Historique{
     public Observation getFromHistorique(Action action){
         return this.liste.get(action);
     }
+    @Override
+    public String toString(){
+        String chaine = "";
+        for (Map.Entry<Action, Observation> entry : liste.entrySet()) {
+            Action key = entry.getKey();
+            Observation value = entry.getValue();
+            chaine = chaine + key + " - " + value + " | ";
+        }
+        return chaine;
+    }
 }

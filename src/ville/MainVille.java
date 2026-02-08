@@ -5,15 +5,14 @@ import java.util.*;
 
 public class MainVille {
     public static void main(String[] args) {
-
         Ville ville = new Ville();
         ville.ajouterRoute("Gare", "Centre");
         ville.ajouterRoute("Centre", "Parc");
         ville.ajouterRoute("Gare", "Port");
         
 
-        Agent a1 = new Agent("Alice");
-        Agent a2 = new Agent("Bob");
+        Agent a1 = new Agent(new PolitiqueRandom(),"Alice");
+        Agent a2 = new Agent(new PolitiqueRandom(),"Bob");
         List<Agent> agents = List.of(a1, a2);
 
 

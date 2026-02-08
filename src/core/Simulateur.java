@@ -31,6 +31,9 @@ public class Simulateur {
                 var actionsPossibles = jeu.getActionsPossibles(agent, etatCourant);
                 Action action = politique.chooseAction(agent, etatCourant, actionsPossibles);
                 actionJointe.addAction(agent, action);
+                Observation obs = jeu.makeObservation(agent,actionJointe,etatCourant);
+                agent.inform(obs,action);
+                System.out.println(agent.getHistorique());
             }
 
             etatCourant = jeu.nextState(etatCourant, actionJointe);

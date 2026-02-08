@@ -117,5 +117,10 @@ public class JeuHanabi extends Jeu {
         return actions;
     }
 
+    @Override
+    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState){
+        return new ObservationHanabi(agent,nextState,actions);
+    }
+
 
 }

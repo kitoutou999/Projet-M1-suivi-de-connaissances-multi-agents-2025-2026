@@ -24,8 +24,8 @@ public class MainHanabi{
         PolitiqueRandom politiqueRandom = new PolitiqueRandom();
 
         //Créer les agents
-        Agent a1 = new Agent("Alice");
-        Agent a2 = new Agent("Bob");
+        Agent a1 = new Agent(politiqueRandom,"Alice");
+        Agent a2 = new Agent(politiqueRandom,"Bob");
         List<Agent> agents = List.of(a1, a2);
 
 

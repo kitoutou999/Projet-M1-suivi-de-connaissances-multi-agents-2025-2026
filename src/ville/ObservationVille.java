@@ -5,21 +5,20 @@ import java.util.*;
 
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
-    public ObservationVille(Agent agent,Etat nextState,ActionJointe actions){
+    public ObservationVille(Agent agent,Etat nextState,ActionJointe actions,int step){
         this.name = agent.toString() + nextState.toString() + actions.toString();
         EtatRDV nextStateRDV = (EtatRDV) nextState;
         String agentPos = nextStateRDV.getPosition(agent);
         Map<Agent, String> positions = nextStateRDV.getPositions();
-        
+
         for (Map.Entry<Agent, String> entry : positions.entrySet()) {
 
             Agent agentFromMap = entry.getKey();
             String positionOfAgent = entry.getValue();
 
-            if(positionOfAgent == agentPos){
+            if(positionOfAgent.equals(agentPos)){
                 if(agentFromMap.equals(agent)== false){
-                    //faire en sorte qu'on connaisse le pas de temps actuel et le mettre à la place du 0
-                    message.add(new MessageAgentPresent(0,positionOfAgent,agentFromMap));
+                    message.add(new MessageAgentPresent(step,positionOfAgent,agentFromMap));
                 }
             }
         }

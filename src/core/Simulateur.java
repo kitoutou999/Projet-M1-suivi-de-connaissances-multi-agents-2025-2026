@@ -23,20 +23,26 @@ public class Simulateur {
             step++;
             ActionJointe actionJointe = new ActionJointe();
 
-            //agent choisit action
+            // Phase 1 : tous les agents choisissent leur action
             for (Map.Entry<Agent, Politique> entry : politiques.entrySet()) {
                 Agent agent = entry.getKey();
                 Politique politique = entry.getValue();
-                
+
                 var actionsPossibles = jeu.getActionsPossibles(agent, etatCourant);
                 Action action = politique.chooseAction(agent, etatCourant, actionsPossibles);
                 actionJointe.addAction(agent, action);
-                Observation obs = jeu.makeObservation(agent,actionJointe,etatCourant);
-                agent.inform(obs,action);
-                System.out.println(agent.getHistorique());
             }
 
+            // Phase 2 : calcul du nouvel état
             etatCourant = jeu.nextState(etatCourant, actionJointe);
+
+            // Phase 3 : chaque agent observe le nouvel état
+            for (Map.Entry<Agent, Politique> entry : politiques.entrySet()) {
+                Agent agent = entry.getKey();
+                Observation obs = jeu.makeObservation(agent, actionJointe, etatCourant, step);
+                agent.inform(obs, actionJointe.getAction(agent));
+                System.out.println(agent.getHistorique());
+            }
             
             System.out.println("Tour " + step + " : " + actionJointe);
             System.out.println("Nouvel état : " + etatCourant);

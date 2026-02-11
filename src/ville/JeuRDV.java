@@ -83,8 +83,8 @@ public class JeuRDV extends Jeu {
         return actions;
     }
 
-    @Override 
-    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState){
-        return new ObservationVille(agent,nextState,actions);
+    @Override
+    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
+        return new ObservationVille(agent,nextState,actions,step);
     }
 }

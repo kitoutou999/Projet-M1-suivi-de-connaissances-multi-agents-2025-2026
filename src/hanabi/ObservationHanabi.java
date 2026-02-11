@@ -46,7 +46,7 @@ public class ObservationHanabi extends Observation {
     public String toString() {
         String chaine = "Mains visibles : ";
         for (Map.Entry<Agent, List<Carte>> entry : mainsAutresAgents.entrySet()) {
-            chaine += entry.getKey() + " → " + entry.getValue() + " | ";
+            chaine += entry.getKey() + " -> " + entry.getValue() + " | ";
         }
         chaine += "Piles : " + etatPiles + " | ";
         chaine += "Erreurs : " + nbErreurs;

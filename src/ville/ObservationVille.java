@@ -11,6 +11,7 @@ public class ObservationVille extends Observation{
         String agentPos = nextStateRDV.getPosition(agent);
         Map<Agent, String> positions = nextStateRDV.getPositions();
 
+        //Présence d'agent(s) à la même pos que l'agent
         for (Map.Entry<Agent, String> entry : positions.entrySet()) {
 
             Agent agentFromMap = entry.getKey();
@@ -21,6 +22,13 @@ public class ObservationVille extends Observation{
                     message.add(new MessageAgentPresent(step,positionOfAgent,agentFromMap));
                 }
             }
+        }
+
+        //Route fermée
+        AgentVille agentV = (AgentVille) agent;
+        String actualPosition = agentV.getPosition();
+        if(agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement){
+            message.add(new MessageRouteFerme(step,actualPosition));
         }
     }
 

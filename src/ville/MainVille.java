@@ -11,14 +11,17 @@ public class MainVille {
         ville.ajouterRoute("Gare", "Port");
         
 
-        Agent a1 = new Agent(new PolitiqueRandom(),"Alice");
-        Agent a2 = new Agent(new PolitiqueRandom(),"Bob");
+        AgentVille a1 = new AgentVille(new PolitiqueRandom(),"Alice",null);
+        AgentVille a2 = new AgentVille(new PolitiqueRandom(),"Bob",null);
         List<Agent> agents = List.of(a1, a2);
 
 
         Map<Agent, String> positionsDebut = new HashMap<>();
         positionsDebut.put(a1, "Gare");
         positionsDebut.put(a2, "Parc");
+        //changer la façon dont on place au début les agents dans la ville.
+        a1.setPosition("Gare");
+        a2.setPosition("Parc");
 
 
         JeuRDV jeu = new JeuRDV(ville, "Centre", agents, positionsDebut);

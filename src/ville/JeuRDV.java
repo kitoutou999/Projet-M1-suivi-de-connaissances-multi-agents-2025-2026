@@ -53,6 +53,7 @@ public class JeuRDV extends Jeu {
                 String destination = ad.destination();
                 if (ville.estOuvert(destination)) {
                     nouvellesPositions.put(agent, destination);
+                    agent.setPosition(destination);
                 } else {
                     System.out.println("Lieu fermé : " + destination + " (Agent " + agent.getId() + " bloqué)");
                 }
@@ -83,8 +84,8 @@ public class JeuRDV extends Jeu {
         return actions;
     }
 
-    @Override 
-    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState){
-        return new ObservationVille(agent,nextState,actions);
+    @Override
+    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
+        return new ObservationVille(agent,nextState,actions,step);
     }
 }

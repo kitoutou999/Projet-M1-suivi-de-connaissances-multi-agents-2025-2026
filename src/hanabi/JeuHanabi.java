@@ -80,7 +80,11 @@ public class JeuHanabi extends Jeu {
                 int posCarte = ad.posCarte();
                 Carte carteDefausse = (newMainsAgents.get(agent)).get(posCarte);
                 newListMessage.add("Defausse de la carte " + carteDefausse);
-                (newMainsAgents.get(agent)).set(posCarte,hanabi.retireCarte()); //L'agent pioche une nouvelle carte
+                if (!hanabi.getPioche().isEmpty()) {
+                    (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
+                } else {
+                    (newMainsAgents.get(agent)).remove(posCarte);
+                }
 
             } else if (action instanceof ActionMessage am) { //Si méssage
                 String message = am.message();
@@ -104,7 +108,11 @@ public class JeuHanabi extends Jeu {
                     newNbErreur += 1;
                 }
 
-                (newMainsAgents.get(agent)).set(posCarte,hanabi.retireCarte()); //L'agent pioche une nouvelle carte
+                if (!hanabi.getPioche().isEmpty()) {
+                    (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
+                } else {
+                    (newMainsAgents.get(agent)).remove(posCarte);
+                }
 
                 
 
@@ -137,7 +145,7 @@ public class JeuHanabi extends Jeu {
     }
 
     @Override
-    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState){
+    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
         return new ObservationHanabi(agent,nextState,actions);
     }
 

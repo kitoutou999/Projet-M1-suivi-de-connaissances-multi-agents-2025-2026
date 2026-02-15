@@ -7,7 +7,7 @@ public abstract class Observation{
     @Override
     public boolean equals(Object obs){
         Observation obss = (Observation) obs;
-        if(this.name != obss.getName()){
+        if(!this.name.equals(obss.getName())){
             return false;
         }else{
             return true;

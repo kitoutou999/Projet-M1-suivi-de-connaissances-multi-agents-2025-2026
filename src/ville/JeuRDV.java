@@ -53,7 +53,6 @@ public class JeuRDV extends Jeu {
                 String destination = ad.destination();
                 if (ville.estOuvert(destination)) {
                     nouvellesPositions.put(agent, destination);
-                    agent.setPosition(destination);
                 } else {
                     System.out.println("Lieu fermé : " + destination + " (Agent " + agent.getId() + " bloqué)");
                 }

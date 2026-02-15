@@ -6,7 +6,6 @@ import java.util.*;
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
     public ObservationVille(Agent agent,Etat nextState,ActionJointe actions,int step){
-        this.name = agent.toString() + nextState.toString() + actions.toString();
         EtatRDV nextStateRDV = (EtatRDV) nextState;
         String agentPos = nextStateRDV.getPosition(agent);
         Map<Agent, String> positions = nextStateRDV.getPositions();
@@ -30,6 +29,7 @@ public class ObservationVille extends Observation{
         if(agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement){
             message.add(new MessageRouteFerme(step,actualPosition));
         }
+        this.name = agent.toString() + message.toString();
     }
 
     public List<Message> getMessage(){

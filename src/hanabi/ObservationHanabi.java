@@ -9,7 +9,6 @@ public class ObservationHanabi extends Observation {
     private final int nbErreurs;
 
     public ObservationHanabi(Agent agent, Etat nextState, ActionJointe actions) {
-        this.name = agent.toString() + nextState.toString() + actions.toString();
         EtatHanabi etat = (EtatHanabi) nextState;
 
         // Mains des autres agents (pas la sienne)
@@ -28,6 +27,7 @@ public class ObservationHanabi extends Observation {
 
         // Nombre d'erreurs
         this.nbErreurs = etat.getNbErreur();
+        this.name = agent.toString() + mainsAutresAgents.toString() + etatPiles.toString() + nbErreurs;
     }
 
     public Map<Agent, List<Carte>> getMainsAutresAgents() {

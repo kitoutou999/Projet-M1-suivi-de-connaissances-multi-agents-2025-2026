@@ -7,11 +7,14 @@ public class JeuHanabi extends Jeu {
     private final Hanabi hanabi;
     private final List<Agent> agents;
     private final EtatHanabi etatInitial;
+    private int boucleJeu;
 
     public JeuHanabi(Hanabi hanabi,List<Agent> agents,Map<Agent,List<Carte>> mainsAgents){
         this.hanabi = hanabi;
         this.agents = agents;
-        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,new ArrayList<>());
+        this.boucleJeu = 0;
+        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,new ArrayList<>(),agents.get(boucleJeu));
+        
     }
 
 
@@ -103,17 +106,33 @@ public class JeuHanabi extends Jeu {
 
                 (newMainsAgents.get(agent)).set(posCarte,hanabi.retireCarte()); //L'agent pioche une nouvelle carte
 
+                
+
             }
         }
-        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,newListMessage);
+
+        boucleJeu++;
+        if(boucleJeu >= agents.size()){ 
+            boucleJeu = 0;
+        }
+        
+        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,newListMessage,agents.get(boucleJeu));
     }
 
     @Override
     public List<Action> getActionsPossibles(Agent agent, Etat etat) {
+        EtatHanabi e = (EtatHanabi) etat;
         List<Action> actions = new ArrayList<>();
-        actions.add(new ActionMessage("Coucou."));
-        actions.add(new ActionDefausse(0));
-        actions.add(new ActionPoser(0));
+
+        if(agent.getId() == (e.getAgentQuiJoue()).getId()){
+            actions.add(new ActionMessage("Coucou."));
+            actions.add(new ActionDefausse(0));
+            actions.add(new ActionPoser(0));
+        }
+        else{
+            actions.add(new ActionVide());
+        }
+       
         return actions;
     }
 

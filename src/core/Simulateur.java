@@ -29,7 +29,7 @@ public class Simulateur {
                 Politique politique = entry.getValue();
 
                 var actionsPossibles = jeu.getActionsPossibles(agent, etatCourant);
-                Action action = politique.chooseAction(agent, etatCourant, actionsPossibles);
+                Action action = politique.chooseAction(agent, agent.getHistorique(), actionsPossibles);
                 actionJointe.addAction(agent, action);
             }
 

@@ -14,8 +14,8 @@ public class Agent{
     public String toString() {
         return "Agent[" + this.id + "]";
     }
-    public Action chooseAction(Etat etat,List<Action> actionsPossibles){
-        Action action = this.politique.chooseAction(this,etat,actionsPossibles);
+    public Action chooseAction(List<Action> actionsPossibles){
+        Action action = this.politique.chooseAction(this,this.historique,actionsPossibles);
         return action;
     }
     public void inform(Observation observation,Action action){

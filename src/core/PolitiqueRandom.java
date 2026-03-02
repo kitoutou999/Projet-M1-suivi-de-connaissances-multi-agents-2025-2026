@@ -9,7 +9,7 @@ public class PolitiqueRandom implements Politique {
     private final Random random = new Random();
 
     @Override
-    public Action chooseAction(Agent agent, Etat etat, List<Action> actionsPossibles) {
+    public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles) {
         if (actionsPossibles.isEmpty()) {
             return null;
         }

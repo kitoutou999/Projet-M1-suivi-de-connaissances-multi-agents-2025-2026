@@ -9,12 +9,14 @@ public class JeuRDV extends Jeu {
     private final String lieuRDV;
     private final List<Agent> agents;
     private final EtatRDV etatInitial;
+    private final int mode;//1 pour simple avec route fermée définitivement.
 
     public JeuRDV(Ville ville, String lieuRDV, List<Agent> agents, Map<Agent, String> positionsInitiales) {
         this.ville = ville;
         this.lieuRDV = lieuRDV;
         this.agents = agents;
         this.etatInitial = new EtatRDV(positionsInitiales, new HashMap<>());
+        this.mode = 1;
     }
 
     @Override
@@ -85,6 +87,6 @@ public class JeuRDV extends Jeu {
 
     @Override
     public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
-        return new ObservationVille(agent,nextState,actions,step);
+        return new ObservationVille(agent,nextState,actions,step,this.mode);
     }
 }

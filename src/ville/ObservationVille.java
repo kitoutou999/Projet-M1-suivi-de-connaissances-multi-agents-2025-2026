@@ -5,11 +5,10 @@ import java.util.*;
 
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
-    public ObservationVille(Agent agent,Etat nextState,ActionJointe actions,int step){
+    public ObservationVille(Agent agent,Etat nextState,ActionJointe actions,int step,int mode){
         EtatRDV nextStateRDV = (EtatRDV) nextState;
         String agentPos = nextStateRDV.getPosition(agent);
         Map<Agent, String> positions = nextStateRDV.getPositions();
-
         //Présence d'agent(s) à la même pos que l'agent
         for (Map.Entry<Agent, String> entry : positions.entrySet()) {
 
@@ -27,7 +26,17 @@ public class ObservationVille extends Observation{
         AgentVille agentV = (AgentVille) agent;
         String actualPosition = agentV.getPosition();
         if(agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement){
-            message.add(new MessageRouteFerme(step,actualPosition));
+            if(mode == 1){
+                message.add(new MessageRouteFerme(step,actualPosition));
+            }else if(mode == 2){
+                message.add(new MessageRouteHoraire(-1,step,actualPosition,false));
+            }
+        }
+        //Route ouverte
+        if(!agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement){
+            if(mode == 2){
+                message.add(new MessageRouteHoraire(step,-1,actualPosition,true));
+            }
         }
         this.name = agent.toString() + message.toString();
     }

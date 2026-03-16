@@ -44,7 +44,7 @@ public class Simulateur {
                 System.out.println(agent.getHistorique());
             }
             
-            System.out.println("Tour " + step + " : " + actionJointe);
+            System.out.println("\nTour " + step + " : " + actionJointe);
             System.out.println("Nouvel état : " + etatCourant);
         }
 

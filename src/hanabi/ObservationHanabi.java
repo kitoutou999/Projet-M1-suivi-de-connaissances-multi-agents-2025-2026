@@ -7,9 +7,11 @@ public class ObservationHanabi extends Observation {
     private final Map<Agent, List<Carte>> mainsAutresAgents;
     private final Map<String, Deque<Carte>> etatPiles;
     private final int nbErreurs;
+    private final Agent agent;
 
     public ObservationHanabi(Agent agent, Etat nextState, ActionJointe actions) {
         EtatHanabi etat = (EtatHanabi) nextState;
+        this.agent = agent;
 
         // Mains des autres agents (pas la sienne)
         this.mainsAutresAgents = new HashMap<>();
@@ -27,7 +29,6 @@ public class ObservationHanabi extends Observation {
 
         // Nombre d'erreurs
         this.nbErreurs = etat.getNbErreur();
-        this.name = agent.toString() + mainsAutresAgents.toString() + etatPiles.toString() + nbErreurs;
     }
 
     public Map<Agent, List<Carte>> getMainsAutresAgents() {
@@ -44,12 +45,13 @@ public class ObservationHanabi extends Observation {
 
     @Override
     public String toString() {
-        String chaine = "Mains visibles : ";
+        String chaine = "Observations de " + this.agent + " :\n";
+        chaine += "\tMains visibles : ";
         for (Map.Entry<Agent, List<Carte>> entry : mainsAutresAgents.entrySet()) {
             chaine += entry.getKey() + " -> " + entry.getValue() + " | ";
         }
-        chaine += "Piles : " + etatPiles + " | ";
-        chaine += "Erreurs : " + nbErreurs;
+        chaine += ":\n\tPiles : " + etatPiles + " | ";
+        chaine += "\n\tErreurs : " + nbErreurs;
         return chaine;
     }
 }

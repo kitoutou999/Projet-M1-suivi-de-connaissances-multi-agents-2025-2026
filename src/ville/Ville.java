@@ -26,4 +26,14 @@ public class Ville {
     public Set<String> getLieux() {
         return adjacences.keySet();
     }
+    
+    public Ville copierVille(){
+    	Ville copie = new Ville();
+    	for(String lieu : this.getLieux()){
+    		for(String voisin : adjacences.get(lieu)){
+    			copie.ajouterRoute(lieu, voisin);
+    		}
+    	}
+    	return copie; 
+    }
 }

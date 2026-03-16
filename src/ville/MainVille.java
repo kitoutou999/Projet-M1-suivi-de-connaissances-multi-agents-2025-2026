@@ -10,9 +10,11 @@ public class MainVille {
         ville.ajouterRoute("Centre", "Parc");
         ville.ajouterRoute("Gare", "Port");
         
-
-        AgentVille a1 = new AgentVille(new PolitiqueRandom(),"Alice",null);
-        AgentVille a2 = new AgentVille(new PolitiqueRandom(),"Bob",null);
+        Ville villeAlice = ville.copierVille();
+        Ville villeBob = ville.copierVille();
+        
+        AgentVille a1 = new AgentVille(new PolitiquePCC("Centre", villeAlice),"Alice",null);
+        AgentVille a2 = new AgentVille(new PolitiquePCC("Centre", villeBob),"Bob",null);
         List<Agent> agents = List.of(a1, a2);
 
 
@@ -26,10 +28,9 @@ public class MainVille {
 
         JeuRDV jeu = new JeuRDV(ville, "Centre", agents, positionsDebut);
 
-
         Map<Agent, Politique> politiques = new HashMap<>();
-        politiques.put(a1, new PolitiqueRandom());
-        politiques.put(a2, new PolitiqueRandom());
+        politiques.put(a1, new PolitiquePCC("Centre", villeAlice));
+        politiques.put(a2, new PolitiquePCC("Centre", villeBob));
 
 
         Simulateur simulateur = new Simulateur(jeu, politiques);

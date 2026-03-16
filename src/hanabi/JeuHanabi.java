@@ -134,8 +134,10 @@ public class JeuHanabi extends Jeu {
 
         if(agent.getId() == (e.getAgentQuiJoue()).getId()){
             actions.add(new ActionMessage("Coucou."));
-            actions.add(new ActionDefausse(0));
-            actions.add(new ActionPoser(0));
+            for(int i = 0;i < 5; i++){
+                actions.add(new ActionDefausse(i));
+                actions.add(new ActionPoser(i));
+            }
         }
         else{
             actions.add(new ActionVide());

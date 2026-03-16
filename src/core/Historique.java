@@ -13,6 +13,15 @@ public class Historique{
         this.liste.add(Map.entry(action,observation));
     }
 
+    public List<Map.Entry<Action, Observation>> getListe(){
+        return liste;
+    }
+
+    public Map.Entry<Action, Observation> getDerniere(){
+        if (liste.isEmpty()) return null;
+        return liste.get(liste.size() - 1);
+    }
+
     public Observation getFromHistorique(Action action){
         for (int i = liste.size() - 1; i >= 0; i--) {
             if (liste.get(i).getKey().equals(action)) {

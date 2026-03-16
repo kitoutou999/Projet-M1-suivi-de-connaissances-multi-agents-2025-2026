@@ -28,6 +28,7 @@ public class Hanabi {
                 for(int i = 0;i < n;i++){
                     Carte carte = new Carte(numero,couleur);
                     piocheTempo.add(carte);
+
                 }
                 numero++;
             }

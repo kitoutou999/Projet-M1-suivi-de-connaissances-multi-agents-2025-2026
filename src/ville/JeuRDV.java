@@ -1,6 +1,7 @@
 package ville;
 
 import core.*;
+import core.Message;
 import java.util.*;
 
 public class JeuRDV extends Jeu {
@@ -41,7 +42,7 @@ public class JeuRDV extends Jeu {
         EtatRDV e = (EtatRDV) etat;
 
         Map<Agent, String> nouvellesPositions = new HashMap<>(e.getPositions());
-        Map<String, List<String>> nouveauxMessages = new HashMap<>(e.getMessagesMap());
+        Map<String, List<Message>> nouveauxMessages = new HashMap<>(e.getMessagesMap());
         // On recrée les listes pour éviter les effets de bord sur l'ancien état
         for(String key : new HashSet<>(nouveauxMessages.keySet())) {
             nouveauxMessages.put(key, new ArrayList<>(nouveauxMessages.get(key)));
@@ -65,6 +66,7 @@ public class JeuRDV extends Jeu {
         }
 
         return new EtatRDV(nouvellesPositions, nouveauxMessages);
+
     }
 
     @Override
@@ -77,8 +79,6 @@ public class JeuRDV extends Jeu {
         for (String voisin : ville.getVoisins(pos)) {
             actions.add(new ActionDeplacement(voisin));
         }
-
-        actions.add(new ActionMessage("Je suis passé par " + pos));
 
         actions.add(new ActionRester());
 

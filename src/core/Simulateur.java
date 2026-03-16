@@ -44,8 +44,10 @@ public class Simulateur {
                 System.out.println(agent.getHistorique());
             }
             
-            System.out.println("Tour " + step + " : " + actionJointe);
+            String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");
+            System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m\033[4m : " + ligneAction + "\033[0m");
             System.out.println("Nouvel état : " + etatCourant);
+            System.out.println("--------------------------------------------------");
         }
 
         System.out.println("Simulation terminée.");

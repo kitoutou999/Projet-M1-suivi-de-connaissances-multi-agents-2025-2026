@@ -1,2 +1,7 @@
-/.idea/
-/out/
+*.class
+*.md
+target/
+.idea/
+*.iml
+.DS_Store
+.gitignore

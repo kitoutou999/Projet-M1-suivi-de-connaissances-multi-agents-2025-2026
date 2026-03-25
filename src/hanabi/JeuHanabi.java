@@ -13,7 +13,7 @@ public class JeuHanabi extends Jeu {
         this.hanabi = hanabi;
         this.agents = agents;
         this.boucleJeu = 0;
-        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,new ArrayList<>(),agents.get(boucleJeu));
+        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,agents.get(boucleJeu));
         
     }
 
@@ -70,7 +70,6 @@ public class JeuHanabi extends Jeu {
             newJeu.put(key, new ArrayDeque<>(newJeu.get(key)));
         }
 
-        List<String> newListMessage = new ArrayList<>(e.getListMessage()); //Créer une copie de la list des messages pour faire la nouvelle
         int newNbErreur = e.getNbErreur(); //Créer une copie du nombre d'erreur pour mettre à jour
 
         for (Agent agent : actions.getAgents()) {
@@ -78,18 +77,11 @@ public class JeuHanabi extends Jeu {
 
             if (action instanceof ActionDefausse ad) { //Si défausse
                 int posCarte = ad.posCarte();
-                Carte carteDefausse = (newMainsAgents.get(agent)).get(posCarte);
-                newListMessage.add("Defausse de la carte " + carteDefausse);
                 if (!hanabi.getPioche().isEmpty()) {
                     (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
                 } else {
                     (newMainsAgents.get(agent)).remove(posCarte);
                 }
-
-            } else if (action instanceof ActionMessage am) { //Si méssage
-                String message = am.message();
-                newListMessage.add("Laisse message :" + message);
-
             } else if (action instanceof ActionPoser ap) { //Si poser une carte
                 int posCarte = ap.posCarte();
                 Carte carte = (newMainsAgents.get(agent)).get(posCarte);
@@ -100,11 +92,15 @@ public class JeuHanabi extends Jeu {
                 if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                     pile.push(carte);
                 }
-                else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes
+                else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
                     pile.push(carte);
                 }
                 else{ //Si l'agent s'est trompé
-                    newListMessage.add("Defausse de la carte " + carte); //Quand on se trompe,on défausse
+                    if (!hanabi.getPioche().isEmpty()) {
+                        (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
+                    } else {
+                        (newMainsAgents.get(agent)).remove(posCarte);
+                    }
                     newNbErreur += 1;
                 }
 
@@ -119,12 +115,13 @@ public class JeuHanabi extends Jeu {
             }
         }
 
+        //Détermine le prochain agent qui joue
         boucleJeu++;
         if(boucleJeu >= agents.size()){ 
             boucleJeu = 0;
         }
         
-        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,newListMessage,agents.get(boucleJeu));
+        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu));
     }
 
     @Override
@@ -133,7 +130,7 @@ public class JeuHanabi extends Jeu {
         List<Action> actions = new ArrayList<>();
 
         if(agent.getId() == (e.getAgentQuiJoue()).getId()){
-            actions.add(new ActionMessage("Coucou."));
+            actions.add(new ActionIndiquer());
             for(int i = 0;i < 5; i++){
                 actions.add(new ActionDefausse(i));
                 actions.add(new ActionPoser(i));

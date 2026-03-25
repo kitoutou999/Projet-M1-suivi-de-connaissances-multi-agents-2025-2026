@@ -51,7 +51,7 @@ public class ObservationHanabi extends Observation {
             chaine += entry.getKey() + " -> " + entry.getValue() + " | ";
         }
         chaine += ":\n\tPiles : " + etatPiles + " | ";
-        chaine += "\n\tErreurs : " + nbErreurs;
+        chaine += "\n\tErreurs : " + nbErreurs + "\n";
         return chaine;
     }
 }

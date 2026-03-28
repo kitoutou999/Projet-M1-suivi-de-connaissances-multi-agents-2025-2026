@@ -25,8 +25,9 @@ public class MainHanabi{
         PolitiqueSimpleHanabi politiqueSimple = new PolitiqueSimpleHanabi();
 
         //Créer les agents
-        Agent a1 = new Agent(politiqueSimple,"Alice");
-        Agent a2 = new Agent(politiqueSimple,"Bob");
+        List<Carte> carteBase = new ArrayList<>(hanabi.getPioche());
+        AgentHanabi a1 = new AgentHanabi(politiqueSimple,"Alice",carteBase);
+        AgentHanabi a2 = new AgentHanabi(politiqueSimple,"Bob",carteBase);
         List<Agent> agents = List.of(a1, a2);
 
 

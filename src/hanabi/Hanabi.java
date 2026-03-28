@@ -58,7 +58,9 @@ public class Hanabi {
         return new ArrayList<>(nombreCarte.keySet());
     } 
 
-
+    public Map<String,List<Integer>> getNombreCarte(){
+        return nombreCarte;
+    } 
 
     
 }

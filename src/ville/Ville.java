@@ -28,32 +28,24 @@ public class Ville {
     }
 
 
-    public static Ville genererAleatoire(int nbLieux, int nbRoutesSupp, Random rand) {
+    public static Ville genererDeuxArbres(int profondeur, int nbPonts) {
         Ville ville = new Ville();
-        List<String> lieux = new ArrayList<>();
-        for (int i = 0; i < nbLieux; i++) {
-            lieux.add("Lieu" + i);
+        int nbNoeuds = (int) Math.pow(2, profondeur) - 1;
+
+        //deux arbres
+        for(int i = 0; i < nbNoeuds; i++){
+            int gauche = 2 * i + 1;
+            int droite = 2 * i + 2;
+            if(gauche < nbNoeuds) ville.ajouterRoute("A" + i, "A" + gauche);
+            if(droite < nbNoeuds) ville.ajouterRoute("A" + i, "A" + droite);
+            if(gauche < nbNoeuds) ville.ajouterRoute("B" + i, "B" + gauche);
+            if(droite < nbNoeuds) ville.ajouterRoute("B" + i, "B" + droite);
+        }
+        int premiereFeuilleA = (int) Math.pow(2, profondeur - 1) - 1;
+        for(int i = 0; i < nbPonts; i++){
+            ville.ajouterRoute("A" + (premiereFeuilleA + i), "B" + (premiereFeuilleA + i));
         }
 
-        // Arbre
-        List<String> connectes = new ArrayList<>();
-        connectes.add(lieux.get(0));
-        List<String> restants = new ArrayList<>(lieux.subList(1, lieux.size()));
-        Collections.shuffle(restants, rand);
-        for (String lieu : restants) {
-            String parent = connectes.get(rand.nextInt(connectes.size()));
-            ville.ajouterRoute(parent, lieu);
-            connectes.add(lieu);
-        }
-
-        // Routes en plus aleatoire
-        for (int i = 0; i < nbRoutesSupp; i++) {
-            String a = lieux.get(rand.nextInt(nbLieux));
-            String b = lieux.get(rand.nextInt(nbLieux));
-            if (!a.equals(b)) {
-                ville.ajouterRoute(a, b);
-            }
-        }
         return ville;
     }
 

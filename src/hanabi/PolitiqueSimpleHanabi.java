@@ -9,8 +9,8 @@ public class PolitiqueSimpleHanabi implements Politique {
 
     @Override
     public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles) {
+        //Divise les action possibles en groupes
         if(agent instanceof AgentHanabi agentHanabi){
-            Action actionChoisi = null;
             if (actionsPossibles.isEmpty()) {
                 return null;
             }
@@ -34,8 +34,11 @@ public class PolitiqueSimpleHanabi implements Politique {
                 else if(action instanceof ActionPoser ap){
                     actionPoser.add(ap);
                 }
-                else if(action instanceof ActionIndiquer ai){
-                    actionInfo.add(ai);
+                else if(action instanceof ActionIndiquerCouleur aic){
+                    actionInfo.add(aic);
+                }
+                else if(action instanceof ActionIndiquerValeur aiv){
+                    actionInfo.add(aiv);
                 }
             }
 
@@ -49,7 +52,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                     Sinon -> Action défausse (choix de carte random pour l'instant)
             */
 
-
+            //Créer les domaines pour chaque emplacement avec toute les carte possibles
             List<Set> listDomainesCartes = new ArrayList<>(); //Liste d'ensemble de carte
             List<Carte> carteBase = agentHanabi.getCarteBase();
             for(int i = 0; i < 5;i++){ //Créer 5 ensemble, 1 pour chaque postion de la main de l'agent
@@ -62,6 +65,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
             Random random = new Random();
             
+            //Filtre les domaines en fonction de l'historique
             for(Map.Entry<Action, Observation> entree : historique.getListe()){
                 ObservationHanabi obs = (ObservationHanabi) entree.getValue();
                 Map<Agent, List<Carte>> mainsAutresAgents = obs.getMainsAutresAgents();
@@ -89,15 +93,39 @@ public class PolitiqueSimpleHanabi implements Politique {
 
 
             }
-
+            System.out.println("Les DOMAINES des cartes " + listDomainesCartes + "\n");
             /*
                 Si j'ai au moins une carte jouable dans au moins un domaine -> actionJouer (l'une des cartes en questions)
                 Sinon -> on passe à la suite
             */
-            if(false){
-                actionChoisi = actionPoser.get(0);
-            }
 
+            
+            if(historique.getDerniere() != null){
+                ObservationHanabi lastObs = (ObservationHanabi) historique.getDerniere().getValue();
+                Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
+                Map<Agent, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
+        
+                for(int i = 0;i < 5; i++){
+                    boolean domaineSur = true;
+                    Set<Carte> domaine = listDomainesCartes.get(i);
+                    for(Carte carte : domaine){
+                        String couleurCarte = carte.getCouleur();
+                        Deque<Carte> pile = lastJeu.get(couleurCarte);
+                        
+                        if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
+                            continue;
+                        }
+                        else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
+                            continue;
+                        }
+                        domaineSur = false;
+                    
+                    }
+                    if(domaineSur){
+                        return actionPoser.get(i);
+                    }
+                }
+            }
             /*
                 Pour chaque agent a:
                     Pour chaque carte c de l'agent a
@@ -105,14 +133,11 @@ public class PolitiqueSimpleHanabi implements Politique {
                             Si oui -> actionIndiquer
                             Sinon -> on passe à la suite
             */
-            else if(false){
-                actionChoisi = actionInfo.get(0);
+            if(false){
+                return actionInfo.get(0);
             }
-            else{ //Action défausse (choix de carte random pour l'instant)
-                actionChoisi = actionDefausse.get(random.nextInt(actionDefausse.size())); 
-            }
-            
-            return actionChoisi;
+
+            return actionDefausse.get(random.nextInt(actionDefausse.size()));  //Action défausse (choix de carte random pour l'instant)
         }
         return null;
     }

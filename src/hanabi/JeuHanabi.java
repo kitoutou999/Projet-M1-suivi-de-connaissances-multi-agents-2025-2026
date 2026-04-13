@@ -130,16 +130,26 @@ public class JeuHanabi extends Jeu {
         List<Action> actions = new ArrayList<>();
 
         if(agent.getId() == (e.getAgentQuiJoue()).getId()){
-            actions.add(new ActionIndiquer());
             for(int i = 0;i < 5; i++){
                 actions.add(new ActionDefausse(i));
                 actions.add(new ActionPoser(i));
+                for (Agent a : agents) {
+                    if (a != agent){
+                        actions.add(new ActionIndiquerValeur(a,i,e));
+                    }
+                }
+            }
+            for (String c : hanabi.getListCouleur()) {
+                for (Agent a : agents) {
+                    if (a != agent){
+                        actions.add(new ActionIndiquerCouleur(a,c,e));
+                    }
+                }
             }
         }
         else{
             actions.add(new ActionVide());
         }
-       
         return actions;
     }
 

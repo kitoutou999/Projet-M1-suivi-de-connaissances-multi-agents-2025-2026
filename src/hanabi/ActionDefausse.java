@@ -1,5 +1,6 @@
 package hanabi;
 import java.util.*;
+import core.*;
 
 public record ActionDefausse(int posCarte) implements ActionHanabi{
     @Override

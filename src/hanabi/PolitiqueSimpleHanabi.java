@@ -105,6 +105,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                 Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
                 Map<Agent, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
         
+                //Pour décider de si l'agent pose une carte(un agent ne pose une carte que si l'un de ses domaines ne contient que des cartes joaubles)
                 for(int i = 0;i < 5; i++){
                     boolean domaineSur = true;
                     Set<Carte> domaine = listDomainesCartes.get(i);
@@ -125,18 +126,51 @@ public class PolitiqueSimpleHanabi implements Politique {
                         return actionPoser.get(i);
                     }
                 }
-            }
-            /*
-                Pour chaque agent a:
-                    Pour chaque carte c de l'agent a
-                        regarder si la carte c et jouable dans le jeu (regarder la pile de la couleur de la carte c)
-                            Si oui -> actionIndiquer
-                            Sinon -> on passe à la suite
-            */
-            if(false){
-                return actionInfo.get(0);
-            }
 
+
+                //Pour décider de si l'agent donne une indication à un autre agent (Indique à un agent ag si ag a une carte jouable dans sa main)(choix entre indiqueValeur et IndiqueCouleur aléatoire pour l'instant)
+                for(Map.Entry<Agent,List<Carte>> entry : lastMains.entrySet()){
+                    Agent agentCible = entry.getKey();
+                    List<Carte> cartes = entry.getValue();
+                    for(Carte carte: cartes){
+                        Deque<Carte> pile = lastJeu.get(carte.getCouleur());
+
+                        if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
+                            for(Action a : actionInfo){ 
+                                if (random.nextBoolean()){ 
+                                    if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
+                                        return aiv;
+                                    }
+                                }
+                                else{ 
+                                    if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
+                                        return aic;
+                                    }
+                                }
+                            }
+
+                        }
+
+                        else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
+                            for(Action a : actionInfo){ 
+                                if (random.nextBoolean()){ 
+                                    if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
+                                        return aiv;
+                                    }
+                                }
+                                else{ 
+                                    if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
+                                        return aic;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+
+            }
             return actionDefausse.get(random.nextInt(actionDefausse.size()));  //Action défausse (choix de carte random pour l'instant)
         }
         return null;

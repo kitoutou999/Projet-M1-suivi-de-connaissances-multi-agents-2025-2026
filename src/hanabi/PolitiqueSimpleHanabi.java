@@ -6,11 +6,41 @@ import core.*;
 
 
 public class PolitiqueSimpleHanabi implements Politique {
+    
+    private List<Set> listDomainesCartes;
+    private boolean premierTour;
+    private List<Carte> carteBase;
+    
+    public PolitiqueSimpleHanabi(List<Carte> carteBase){
+    	this.premierTour = true;
+    	this.listDomainesCartes = new ArrayList<>();
+    	this.carteBase = carteBase;
+	for(int i = 0; i < 5;i++){
+        	Set<Carte> domaineCarte = new HashSet();
+                for(Carte carte : carteBase){
+                    domaineCarte.add(carte);
+                }
+                listDomainesCartes.add(domaineCarte);
+	}
+    }
 
     @Override
     public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles) {
         //Divise les action possibles en groupes
         if(agent instanceof AgentHanabi agentHanabi){
+        
+            if (this.premierTour){
+            	for(Map.Entry<Agent, List<Carte>> mains : agentHanabi.getAutresMains().entrySet()){
+                    List<Carte> mainAgent = mains.getValue();
+                    for(Carte carte : mainAgent){
+                        for(Set domaine :listDomainesCartes){
+                            domaine.remove(carte);
+                        }
+                    }
+                }
+                this.premierTour = false;
+            }	
+        
             if (actionsPossibles.isEmpty()) {
                 return null;
             }
@@ -52,47 +82,8 @@ public class PolitiqueSimpleHanabi implements Politique {
                     Sinon -> Action défausse (choix de carte random pour l'instant)
             */
 
-            //Créer les domaines pour chaque emplacement avec toute les carte possibles
-            List<Set> listDomainesCartes = new ArrayList<>(); //Liste d'ensemble de carte
-            List<Carte> carteBase = agentHanabi.getCarteBase();
-            for(int i = 0; i < 5;i++){ //Créer 5 ensemble, 1 pour chaque postion de la main de l'agent
-                Set<Carte> domaineCarte = new HashSet();
-                for(Carte carte : carteBase){
-                    domaineCarte.add(carte);
-                }
-                listDomainesCartes.add(domaineCarte);
-            }
-
             Random random = new Random();
             
-            //Filtre les domaines en fonction de l'historique
-            for(Map.Entry<Action, Observation> entree : historique.getListe()){
-                ObservationHanabi obs = (ObservationHanabi) entree.getValue();
-                Map<Agent, List<Carte>> mainsAutresAgents = obs.getMainsAutresAgents();
-
-                //Enlève les cartes des autres agents de mes domaines
-                for(Map.Entry<Agent, List<Carte>> mains : mainsAutresAgents.entrySet()){
-                    List<Carte> mainAgent = mains.getValue();
-                    for(Carte carte : mainAgent){
-                        for(Set domaine :listDomainesCartes){
-                            domaine.remove(carte);
-                        }
-                    }
-                }
-
-                //Enlève les cartes qui ont été jouées de mes domaines
-                Map<String, Deque<Carte>> etatPiles = obs.getEtatPiles();
-                for(Map.Entry<String, Deque<Carte>> piles : etatPiles.entrySet()){
-                    Deque<Carte> pile = piles.getValue();
-                    for(Carte carte : pile){
-                        for(Set domaine :listDomainesCartes){
-                            domaine.remove(carte);
-                        }
-                    }
-                }
-
-
-            }
             System.out.println("Les DOMAINES des cartes " + listDomainesCartes + "\n");
             /*
                 Si j'ai au moins une carte jouable dans au moins un domaine -> actionJouer (l'une des cartes en questions)

@@ -18,16 +18,19 @@ public class MainHanabi{
             valeurMax.put(c,listNumero.size());
         }
         Hanabi hanabi = new Hanabi(nombreCarte,3,valeurMax);
+        
+        List<Carte> carteBase = new ArrayList<>(hanabi.getPioche());
 
         //System.out.println(hanabi.getPioche() + "\n");
 
         PolitiqueRandom politiqueRandom = new PolitiqueRandom();
-        PolitiqueSimpleHanabi politiqueSimple = new PolitiqueSimpleHanabi();
+        PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase);
+        PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase);
 
         //Créer les agents
-        List<Carte> carteBase = new ArrayList<>(hanabi.getPioche());
-        AgentHanabi a1 = new AgentHanabi(politiqueSimple,"Alice",carteBase);
-        AgentHanabi a2 = new AgentHanabi(politiqueSimple,"Bob",carteBase);
+        
+        AgentHanabi a1 = new AgentHanabi(politiqueSimpleA1,"Alice",carteBase);
+        AgentHanabi a2 = new AgentHanabi(politiqueSimpleA2,"Bob",carteBase);
         List<Agent> agents = List.of(a1, a2);
 
 
@@ -37,6 +40,11 @@ public class MainHanabi{
             List<Carte> mainAgent = new ArrayList<>();
             for(int i = 0;i < 5;i++){
                 mainAgent.add(hanabi.retireCarte());
+            }
+            for(Agent a : agents){
+            	if(a != agent && a instanceof AgentHanabi aH){
+            		aH.getAutresMains().put(agent, mainAgent);
+            	}
             }
             mainsAgents.put(agent,mainAgent);
         }
@@ -48,8 +56,8 @@ public class MainHanabi{
 
         //Créer les politiques
         Map<Agent, Politique> politiques = new HashMap<>();
-        politiques.put(a1, politiqueSimple);
-        politiques.put(a2, politiqueSimple);
+        politiques.put(a1, politiqueSimpleA1);
+        politiques.put(a2, politiqueSimpleA2);
 
 
         //Lance la simulation

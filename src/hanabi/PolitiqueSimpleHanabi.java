@@ -28,18 +28,31 @@ public class PolitiqueSimpleHanabi implements Politique {
     public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles) {
         //Divise les action possibles en groupes
         if(agent instanceof AgentHanabi agentHanabi){
-        
+            ObservationHanabi lastObs = null;
+            Map<Agent, List<Carte>> autresMains = null;
+            //Filtre les domaines par rapport aux mains des autres joueurs
             if (this.premierTour){
-            	for(Map.Entry<Agent, List<Carte>> mains : agentHanabi.getAutresMains().entrySet()){
+            	autresMains = agentHanabi.getAutresMains();
+                this.premierTour = false;
+            }
+            else{
+            	Map.Entry<Action, Observation> der = historique.getDerniere();
+            	lastObs = (ObservationHanabi)der.getValue();
+            	autresMains = lastObs.getMainsAutresAgents();
+            }
+            
+            for(Map.Entry<Agent, List<Carte>> mains : autresMains.entrySet()){
                     List<Carte> mainAgent = mains.getValue();
                     for(Carte carte : mainAgent){
                         for(Set domaine :listDomainesCartes){
-                            domaine.remove(carte);
+                            boolean test = domaine.remove(carte);
+                            if(test){
+                            	System.out.println("Carte supprimée : " + carte);
+                            }
                         }
                     }
                 }
-                this.premierTour = false;
-            }	
+            
         
             if (actionsPossibles.isEmpty()) {
                 return null;
@@ -91,8 +104,7 @@ public class PolitiqueSimpleHanabi implements Politique {
             */
 
             
-            if(historique.getDerniere() != null){
-                ObservationHanabi lastObs = (ObservationHanabi) historique.getDerniere().getValue();
+            if(lastObs != null){
                 Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
                 Map<Agent, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
         

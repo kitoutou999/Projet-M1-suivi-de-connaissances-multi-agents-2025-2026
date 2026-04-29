@@ -5,6 +5,7 @@ public class Agent{
     private Politique politique;
     private String id;
     private Historique historique;
+    private BeliefState<?> beliefState = null;
     public Agent(Politique politique,String id){
         this.politique = politique;
         this.id = id;
@@ -27,4 +28,6 @@ public class Agent{
     public Historique getHistorique(){
         return this.historique;
     }
+    public void setBeliefState(BeliefState<?> bs) { this.beliefState = bs; }
+    public BeliefState<?> getBeliefState() { return this.beliefState; }
 }

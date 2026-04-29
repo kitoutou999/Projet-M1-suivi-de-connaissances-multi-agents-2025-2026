@@ -13,20 +13,6 @@ public class PolitiquePCC implements Politique{
 	private MessageRouteFerme messageAPropager;
 	private String lieuDepotMessage;
 
-	private Map<Agent, List<Set<String>>> historiquePositions;
-	private Map<Agent, List<StepContrainte>> contraintes;
-	private int nbObsTraitees;
-
-	private static class StepContrainte {
-		String positionSur;
-		Set<String> positionsExclues;
-
-		StepContrainte() {
-			this.positionSur = null;
-			this.positionsExclues = new HashSet<>();
-		}
-	}
-
 	public PolitiquePCC(String but, Ville villeConnue){
 		this.chemin = new LinkedList<>();
 		this.but = but;
@@ -35,9 +21,6 @@ public class PolitiquePCC implements Politique{
 		this.doitPoserMessage = false;
 		this.messageAPropager = null;
 		this.lieuDepotMessage = null;
-		this.historiquePositions = new HashMap<>();
-		this.contraintes = new HashMap<>();
-		this.nbObsTraitees = 0;
 	}
 
 	// BFS
@@ -82,99 +65,28 @@ public class PolitiquePCC implements Politique{
 	}
 
 
-	public Map<Agent, Set<String>> getPositionsPossibles(){
+	private Map<Agent, Set<String>> getPositionsPossibles(AgentVille agent){
+		core.BeliefState<?> bs = agent.getBeliefState();
+		if(bs == null) return Map.of();
 		Map<Agent, Set<String>> result = new HashMap<>();
-		for(Map.Entry<Agent, List<Set<String>>> entry : historiquePositions.entrySet()){
-			List<Set<String>> hist = entry.getValue();
-			if(!hist.isEmpty()){
-				result.put(entry.getKey(), hist.get(hist.size() - 1));
-			}
+		for(Object o : bs.getEtatsCompatibles()){
+			EtatRDV e = (EtatRDV) o;
+			e.getPositions().forEach((a, pos) -> {
+				if(!a.equals(agent))
+					result.computeIfAbsent(a, k -> new HashSet<>()).add(pos);
+			});
 		}
 		return result;
 	}
-
-	// Calcule le set de positions possibles pour un agent à un step donné
-	private Set<String> calculerStep(Agent autreAgent, int stepIndex){
-		List<Set<String>> hist = historiquePositions.get(autreAgent);
-		Set<String> prev = (stepIndex == 0 || hist.get(stepIndex - 1).isEmpty())
-				? new HashSet<>(villeConnue.getLieux())
-				: hist.get(stepIndex - 1);
-
-		StepContrainte c = contraintes.get(autreAgent).get(stepIndex);
-
-		if(c.positionSur != null) return new HashSet<>(Set.of(c.positionSur));
-
-		Set<String> predicted = new HashSet<>();
-		for(String pos : prev) predicted.add(nextHop(pos));
-
-		Set<String> apresElimination = new HashSet<>(predicted);
-		apresElimination.removeAll(c.positionsExclues);
-		return apresElimination.isEmpty() ? predicted : apresElimination;
-	}
-
-	private void repropagarDepuis(Agent autreAgent, int stepDebut){
-		List<Set<String>> hist = historiquePositions.get(autreAgent);
-		for(int s = stepDebut; s < hist.size(); s++) hist.set(s, calculerStep(autreAgent, s));
-	}
-
-	private void reviserRouteBloquee(String lieuBloque){
-		for(Agent autreAgent : historiquePositions.keySet()){
-			List<Set<String>> hist = historiquePositions.get(autreAgent);
-			for(int s = 0; s < hist.size(); s++){
-				if(hist.get(s).contains(lieuBloque)){
-					repropagarDepuis(autreAgent, s);
-					break;
-				}
-			}
-		}
-	}
-
-	private void mettreAJourSuivi(AgentVille agentVille, Historique historique){
-		List<Map.Entry<Action, Observation>> liste = historique.getListe();
-		String maPosition = agentVille.getPosition();
-
-		for(int i = nbObsTraitees; i < liste.size(); i++){
-			ObservationVille obs = (ObservationVille) liste.get(i).getValue();
-
-			Map<Agent, String> agentsVus = new HashMap<>();
-			for(Message m : obs.getMessage())
-				if(m instanceof MessageAgentPresent map)
-					agentsVus.put(map.getAgent(), map.getName());
-
-			Set<Agent> tousAgents = new HashSet<>(historiquePositions.keySet());
-			tousAgents.addAll(agentsVus.keySet());
-
-			for(Agent autreAgent : tousAgents){
-				historiquePositions.computeIfAbsent(autreAgent, k -> new ArrayList<>());
-				contraintes.computeIfAbsent(autreAgent, k -> new ArrayList<>());
-
-				StepContrainte c = new StepContrainte();
-				if(agentsVus.containsKey(autreAgent)) c.positionSur = agentsVus.get(autreAgent);
-				else c.positionsExclues.add(maPosition);
-
-				contraintes.get(autreAgent).add(c);
-				historiquePositions.get(autreAgent).add(calculerStep(autreAgent, contraintes.get(autreAgent).size() - 1));
-			}
-		}
-
-		nbObsTraitees = liste.size();
-
-		Map<Agent, Set<String>> current = getPositionsPossibles();
-		if(!current.isEmpty()){
-			System.out.println("  [Suivi " + agentVille + "] Positions possibles des autres agents :");
-			for(Map.Entry<Agent, Set<String>> entry : current.entrySet())
-				System.out.println("    " + entry.getKey() + " -> " + entry.getValue());
-		}
-	}
 	//drop messaege sur chemin des autres agents
-	private String calculerMeilleurDepot(String maPosition){
+	private String calculerMeilleurDepot(AgentVille agent, String maPosition){
 		Set<String> monChemin = new HashSet<>(this.chemin);
 		monChemin.add(maPosition);
 
 		String meilleurDepot = null;
 		int meilleurRang = Integer.MAX_VALUE;
 
-		for(Set<String> possPossibles : getPositionsPossibles().values()){
+		for(Set<String> possPossibles : getPositionsPossibles(agent).values()){
 			for(String pos : possPossibles){
 				LinkedList<String> cheminAgent = cheminDepuis(pos);
 				for(int i = 0; i < cheminAgent.size(); i++){
@@ -194,7 +106,14 @@ public class PolitiquePCC implements Politique{
 
 			System.out.println("Position de " + agentVille + " : " + agentVille.getPosition());
 
-			mettreAJourSuivi(agentVille, historique);
+			// Afficher les positions possibles issues du BeliefState
+			Map<Agent, Set<String>> posPossibles = getPositionsPossibles(agentVille);
+			if(!posPossibles.isEmpty()){
+				System.out.println("  [BeliefState " + agentVille + "] Positions possibles des autres agents :");
+
+				for (Map.Entry<Agent, Set<String>> entry : posPossibles.entrySet())
+						System.out.println("    " + entry.getKey() + " -> " + entry.getValue());
+			}
 
 			if(agentVille.getPosition().equals(this.but)) return new ActionRester();
 
@@ -208,9 +127,8 @@ public class PolitiquePCC implements Politique{
 						villeConnue.fermerLieu(routeFerme.getName());
 						messageAPropager = routeFerme;
 						recalculer = true;
-						reviserRouteBloquee(routeFerme.getName());
 
-						String depot = calculerMeilleurDepot(agentVille.getPosition());
+						String depot = calculerMeilleurDepot(agentVille, agentVille.getPosition());
 						lieuDepotMessage = depot != null ? depot : agentVille.getPosition();
 						doitPoserMessage = true;
 

@@ -61,6 +61,13 @@ public class MainVille {
 
         JeuRDV jeu = new JeuRDV(ville, lieuRDV, agents, positionsDebut);
 
+        // Attacher un BeliefState à Alice
+        BeliefStateFilterVille filtre = new BeliefStateFilterVille(jeu.getMode());
+        List<EtatRDV> etatsInitiaux = new ArrayList<>();
+        etatsInitiaux.add((EtatRDV) jeu.getInitialState());
+        core.BeliefState<EtatRDV> bs = new core.BeliefState<>(etatsInitiaux, filtre, jeu, agents);
+        a1.setBeliefState(bs);
+
         Map<Agent, Politique> politiques = new HashMap<>();
         politiques.put(a1, politiqueAlice);
         politiques.put(a2, politiqueBob);

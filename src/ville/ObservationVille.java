@@ -5,47 +5,39 @@ import java.util.*;
 
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
-    public ObservationVille(Agent agent,Etat nextState,ActionJointe actions,int step,int mode){
+
+    public ObservationVille(Agent agent, Etat nextState, ActionJointe actions, int step, int mode) {
         EtatRDV nextStateRDV = (EtatRDV) nextState;
-        String agentPos = nextStateRDV.getPosition(agent);
-        Map<Agent, String> positions = nextStateRDV.getPositions();
-        //Présence d'agent à la même pos que l'agent
-        for (Map.Entry<Agent, String> entry : positions.entrySet()) {
-
-            Agent agentFromMap = entry.getKey();
-            String positionOfAgent = entry.getValue();
-
-            if(positionOfAgent.equals(agentPos)){
-                if(agentFromMap.equals(agent)== false){
-                    message.add(new MessageAgentPresent(step,positionOfAgent,agentFromMap));
-                }
-            }
-        }
-
-        //Route fermée — lire actualPosition AVANT la mise à jour
         AgentVille agentV = (AgentVille) agent;
-        String actualPosition = agentV.getPosition();
-        if(agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement ad){
-            String destinationTentee = ad.destination();
-            if(mode == 1){
-                message.add(new MessageRouteFerme(step, destinationTentee));
-            }else if(mode == 2){
-                message.add(new MessageRouteHoraire(-1,step, destinationTentee,false));
-            }
-        }
-        //Route ouverte
-        if(!agentPos.equals(actualPosition) && actions.getAction(agentV) instanceof ActionDeplacement){
-            if(mode == 2){
-                message.add(new MessageRouteHoraire(step,-1,actualPosition,true));
-            }
-        }
-        // Messages laissés par d'autres agents sur ce lieu
-        for(Message m : nextStateRDV.getMessages(agentPos)){
-            message.add(m);
-        }
-        // Synchronise la position de l'agent avec le nouvel état
-        agentV.setPosition(agentPos);
+        String positionAvant = agentV.getPosition();
+        construireMessages(agent, nextStateRDV, actions, positionAvant, step, mode);
+        agentV.setPosition(nextStateRDV.getPosition(agent));
         this.name = agent.toString() + message.toString();
+    }
+
+    private ObservationVille(Agent agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
+        construireMessages(agent, etatHyp, actionsHyp, positionAvant, step, mode);
+        this.name = agent.toString() + message.toString();
+    }
+
+    private void construireMessages(Agent agent, EtatRDV etat, ActionJointe actions, String positionAvant, int step, int mode) {
+        String agentPos = etat.getPosition(agent);
+        for (Map.Entry<Agent, String> entry : etat.getPositions().entrySet()) {
+            if (entry.getValue().equals(agentPos) && !entry.getKey().equals(agent))
+                message.add(new MessageAgentPresent(step, agentPos, entry.getKey()));
+        }
+        if (agentPos.equals(positionAvant) && actions.getAction(agent) instanceof ActionDeplacement ad) {
+            if (mode == 1) message.add(new MessageRouteFerme(step, ad.destination()));
+            else if (mode == 2) message.add(new MessageRouteHoraire(-1, step, ad.destination(), false));
+        }
+        if (!agentPos.equals(positionAvant) && actions.getAction(agent) instanceof ActionDeplacement) {
+            if (mode == 2) message.add(new MessageRouteHoraire(step, -1, positionAvant, true));
+        }
+        for (Message m : etat.getMessages(agentPos)) message.add(m);
+    }
+
+    public static ObservationVille simuler(Agent agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
+        return new ObservationVille(agent, etatHyp, actionsHyp, positionAvant, step, mode);
     }
 
     public List<Message> getMessage(){

@@ -41,6 +41,8 @@ public class Simulateur {
                 Agent agent = entry.getKey();
                 Observation obs = jeu.makeObservation(agent, actionJointe, etatCourant, step);
                 agent.inform(obs, actionJointe.getAction(agent));
+                if (agent.getBeliefState() != null)
+                    agent.getBeliefState().mettreAJour(agent, obs, step);
                 System.out.println(agent.getHistorique());
             }
             

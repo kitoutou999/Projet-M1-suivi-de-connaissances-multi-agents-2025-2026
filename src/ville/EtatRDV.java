@@ -34,6 +34,25 @@ public class EtatRDV implements Etat {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof EtatRDV other)) return false;
+        if (!messages.equals(other.messages)) return false;
+        if (positions.size() != other.positions.size()) return false;
+        for (Map.Entry<Agent, String> entry : positions.entrySet()) {
+            boolean trouve = false;
+            for (Map.Entry<Agent, String> autreEntry : other.positions.entrySet()) {
+                if (autreEntry.getKey().getId().equals(entry.getKey().getId())) {
+                    if (!autreEntry.getValue().equals(entry.getValue())) return false;
+                    trouve = true;
+                    break;
+                }
+            }
+            if (!trouve) return false;
+        }
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "EtatRDV{Pos=" + positions + ", Msgs=" + messages + "}";
     }

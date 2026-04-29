@@ -20,6 +20,8 @@ public class JeuRDV extends Jeu {
         this.mode = 1;
     }
 
+    public int getMode() { return mode; }
+
     @Override
     public Etat getInitialState() {
         return etatInitial;

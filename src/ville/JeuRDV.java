@@ -58,8 +58,6 @@ public class JeuRDV extends Jeu {
                 String destination = ad.destination();
                 if (ville.estOuvert(destination)) {
                     nouvellesPositions.put(agent, destination);
-                } else {
-                    System.out.println("Lieu fermé : " + destination + " (Agent " + agent.getId() + " bloqué)");
                 }
             } else if (action instanceof ActionMessage am) {
                 nouveauxMessages.computeIfAbsent(positionActuelle, k -> new ArrayList<>()).add(am.contenu());

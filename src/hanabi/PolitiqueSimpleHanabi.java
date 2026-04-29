@@ -8,16 +8,21 @@ import core.*;
 public class PolitiqueSimpleHanabi implements Politique {
     
     private List<Set> listDomainesCartes;
+    private Set<Carte> domaineDefault;
     private boolean premierTour;
     private List<Carte> carteBase;
     
     public PolitiqueSimpleHanabi(List<Carte> carteBase){
     	this.premierTour = true;
     	this.listDomainesCartes = new ArrayList<>();
+    	this.domaineDefault = new HashSet<Carte>();
     	this.carteBase = carteBase;
         for(int i = 0; i < 5;i++){
             Set<Carte> domaineCarte = new HashSet();
             for(Carte carte : carteBase){
+            	if(i == 0){
+            		domaineDefault.add(carte);
+            	}
                 domaineCarte.add(carte);
             }
             listDomainesCartes.add(domaineCarte);
@@ -51,7 +56,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                         for(int i = 0;i < 5;i++){
                             if(mainAgent.get(i).getCouleur() == daic.couleur()){
                                 Set<Carte> domaine = listDomainesCartes.get(i);
-                                domaine.removeIf(carte -> carte.getCouleur() == daic.couleur());
+                                domaine.removeIf(carte -> carte.getCouleur() != daic.couleur());
                             }
                         }
 
@@ -64,7 +69,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                         for(int i = 0;i < 5;i++){
                             if(mainAgent.get(i).getNumero() == daiv.valeur()){
                                 Set<Carte> domaine = listDomainesCartes.get(i);
-                                domaine.removeIf(carte -> carte.getNumero() == daiv.valeur());
+                                domaine.removeIf(carte -> carte.getNumero() != daiv.valeur());
                             }
                         }
                     }
@@ -76,6 +81,7 @@ public class PolitiqueSimpleHanabi implements Politique {
             for(Map.Entry<Agent, List<Carte>> mains : autresMains.entrySet()){
                 List<Carte> mainAgent = mains.getValue();
                 for(Carte carte : mainAgent){
+                    this.domaineDefault.remove(carte);
                     for(Set domaine :listDomainesCartes){
                         boolean test = domaine.remove(carte);
                         if(test){
@@ -133,7 +139,7 @@ public class PolitiqueSimpleHanabi implements Politique {
             
             System.out.println("Les DOMAINES des cartes :\n");
             for(int i =0;i<5;i++){
-                System.out.println("Domaine " + i+1 + " : " + listDomainesCartes.get(i) + "\n");
+                System.out.println("Domaine " + i + " : " + listDomainesCartes.get(i) + "\n");
             }
 
 
@@ -167,6 +173,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                     
                     }
                     if(domaineSur){
+                    	listDomainesCartes.set(i, new HashSet<Carte>(this.domaineDefault));
                         return actionPoser.get(i);
                     }
                 }
@@ -215,7 +222,9 @@ public class PolitiqueSimpleHanabi implements Politique {
 
 
             }
-            return actionDefausse.get(random.nextInt(actionDefausse.size()));  //Action défausse (choix de carte random pour l'instant)
+            int posRandom = random.nextInt(actionDefausse.size());
+            listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));
+            return actionDefausse.get(posRandom);  //Action défausse (choix de carte random pour l'instant)
         }
         return null;
     }

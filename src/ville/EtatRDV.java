@@ -54,6 +54,22 @@ public class EtatRDV implements Etat {
 
     @Override
     public String toString() {
-        return "EtatRDV{Pos=" + positions + ", Msgs=" + messages + "}";
+        String posStr = "";
+        for (Map.Entry<Agent, String> e : positions.entrySet()) {
+            posStr += e.getKey().getId() + "=" + e.getValue() + "  ";
+        }
+        posStr = posStr.trim();
+
+        String msgStr = "";
+        for (Map.Entry<String, List<Message>> e : messages.entrySet()) {
+            if (!e.getValue().isEmpty()) {
+                msgStr += e.getKey() + "(" + e.getValue().size() + ") ";
+            }
+        }
+
+        if (!msgStr.isEmpty()) {
+            return posStr + "  [msgs: " + msgStr.trim() + "]";
+        }
+        return posStr;
     }
 }

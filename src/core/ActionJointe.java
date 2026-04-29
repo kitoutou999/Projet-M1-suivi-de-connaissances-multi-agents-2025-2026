@@ -22,6 +22,6 @@ public class ActionJointe {
 
     @Override
     public String toString() {
-        return "ActionJointe" + actions;
+        return "\033[1mActionJointe\033[0m" + actions;
     }
 }

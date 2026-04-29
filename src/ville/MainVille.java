@@ -32,19 +32,19 @@ public class MainVille {
     static void scenarioMessage() {
         Ville ville = new Ville();
 
-        ville.ajouterRoute("DebutBob", "AvantX");
-        ville.ajouterRoute("AvantX",   "X");
-        ville.ajouterRoute("X",        "Court");
-        ville.ajouterRoute("X",        "Long");
+        ville.ajouterRoute("B", "AvantA");
+        ville.ajouterRoute("AvantA",   "A");
+        ville.ajouterRoute("A",        "Court");
+        ville.ajouterRoute("A",        "Long");
         ville.ajouterRoute("Court",    "RDV");
         ville.ajouterRoute("Long",     "Detour");
         ville.ajouterRoute("Detour",   "RDV");
 
         ville.fermerLieu("Court");
         System.out.println("Lieu fermé : Court");
-        System.out.println("RDV : RDV | Alice : X | Bob : DebutBob");
+        System.out.println("RDV : RDV | Alice : A | Bob : B");
 
-        lancerSimulation(ville, "RDV", "X", "DebutBob");
+        lancerSimulation(ville, "RDV", "A", "B");
     }
 
     static void lancerSimulation(Ville ville, String lieuRDV, String departAlice, String departBob) {

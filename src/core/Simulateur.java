@@ -17,9 +17,10 @@ public class Simulateur {
         Etat etatCourant = jeu.getInitialState();
         int step = 0;
 
-        System.out.println("État initial : " + etatCourant);
+        System.out.println("État initial : " + etatCourant+"\n");
 
         while (!jeu.isFinal(etatCourant) && step < maxStep) {
+            System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m");
             step++;
             ActionJointe actionJointe = new ActionJointe();
 
@@ -41,15 +42,15 @@ public class Simulateur {
                 Agent agent = entry.getKey();
                 Observation obs = jeu.makeObservation(agent, actionJointe, etatCourant, step);
                 agent.inform(obs, actionJointe.getAction(agent));
+
                 if (agent.getBeliefState() != null)
                     agent.getBeliefState().mettreAJour(agent, obs, step);
-                System.out.println(agent.getHistorique());
             }
-            
+
             String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");
-            System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m\033[4m : " + ligneAction + "\033[0m");
-            System.out.println("Nouvel état : " + etatCourant);
-            System.out.println("--------------------------------------------------");
+            System.out.println("  "+ligneAction );
+            System.out.println("  \033[1mEtat\033[0m : " + etatCourant);
+            System.out.println();
         }
 
         System.out.println("Simulation terminée.");

@@ -20,6 +20,10 @@ public class ActionJointe {
         return actions.keySet();
     }
 
+    public Map<Agent, Action> getActions(){
+        return actions;
+    }
+
     @Override
     public String toString() {
         return "\033[1mActionJointe\033[0m" + actions;

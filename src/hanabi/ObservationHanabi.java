@@ -8,10 +8,12 @@ public class ObservationHanabi extends Observation {
     private final Map<String, Deque<Carte>> etatPiles;
     private final int nbErreurs;
     private final Agent agent;
+    private final ActionJointe actions;
 
     public ObservationHanabi(Agent agent, Etat nextState, ActionJointe actions) {
         EtatHanabi etat = (EtatHanabi) nextState;
         this.agent = agent;
+        this.actions = actions;
 
         // Mains des autres agents (pas la sienne)
         this.mainsAutresAgents = new HashMap<>();
@@ -41,6 +43,10 @@ public class ObservationHanabi extends Observation {
 
     public int getNbErreurs() {
         return nbErreurs;
+    }
+
+    public ActionJointe getActions(){
+        return actions;
     }
 
     @Override

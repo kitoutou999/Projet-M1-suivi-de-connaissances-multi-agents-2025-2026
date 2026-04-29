@@ -15,13 +15,13 @@ public class PolitiqueSimpleHanabi implements Politique {
     	this.premierTour = true;
     	this.listDomainesCartes = new ArrayList<>();
     	this.carteBase = carteBase;
-	for(int i = 0; i < 5;i++){
-        	Set<Carte> domaineCarte = new HashSet();
-                for(Carte carte : carteBase){
-                    domaineCarte.add(carte);
-                }
-                listDomainesCartes.add(domaineCarte);
-	}
+        for(int i = 0; i < 5;i++){
+            Set<Carte> domaineCarte = new HashSet();
+            for(Carte carte : carteBase){
+                domaineCarte.add(carte);
+            }
+            listDomainesCartes.add(domaineCarte);
+        }
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PolitiqueSimpleHanabi implements Politique {
         if(agent instanceof AgentHanabi agentHanabi){
             ObservationHanabi lastObs = null;
             Map<Agent, List<Carte>> autresMains = null;
-            //Filtre les domaines par rapport aux mains des autres joueurs
+
             if (this.premierTour){
             	autresMains = agentHanabi.getAutresMains();
                 this.premierTour = false;
@@ -39,19 +39,53 @@ public class PolitiqueSimpleHanabi implements Politique {
             	Map.Entry<Action, Observation> der = historique.getDerniere();
             	lastObs = (ObservationHanabi)der.getValue();
             	autresMains = lastObs.getMainsAutresAgents();
-            }
-            
-            for(Map.Entry<Agent, List<Carte>> mains : autresMains.entrySet()){
-                    List<Carte> mainAgent = mains.getValue();
-                    for(Carte carte : mainAgent){
-                        for(Set domaine :listDomainesCartes){
-                            boolean test = domaine.remove(carte);
-                            if(test){
-                            	System.out.println("Carte supprimée : " + carte);
+                //Filtre les domaines par rapport aux indiquations données par les autres joueurs
+                ActionJointe derActionsJointes = lastObs.getActions();
+                for(Map.Entry<Agent,Action> actions : derActionsJointes.getActions().entrySet()){
+                    Agent agentAction = actions.getKey();
+                    Action derAction = actions.getValue();
+                    if(derAction instanceof ActionIndiquerCouleur daic && daic.agentCible() == agent){
+                        EtatHanabi etatIndique = (EtatHanabi)daic.etat();
+                        List<Carte> mainAgent = etatIndique.getMainAgent(agent);
+
+                        for(int i = 0;i < 5;i++){
+                            if(mainAgent.get(i).getCouleur() == daic.couleur()){
+                                Set<Carte> domaine = listDomainesCartes.get(i);
+                                domaine.removeIf(carte -> carte.getCouleur() == daic.couleur());
+                            }
+                        }
+
+                        
+                    }
+                    if(derAction instanceof ActionIndiquerValeur daiv && daiv.agentCible() == agent){
+                        EtatHanabi etatIndique = (EtatHanabi)daiv.etat();
+                        List<Carte> mainAgent = etatIndique.getMainAgent(agent);
+
+                        for(int i = 0;i < 5;i++){
+                            if(mainAgent.get(i).getNumero() == daiv.valeur()){
+                                Set<Carte> domaine = listDomainesCartes.get(i);
+                                domaine.removeIf(carte -> carte.getNumero() == daiv.valeur());
                             }
                         }
                     }
                 }
+
+            }
+            
+            //Filtre les domaines par rapport aux mains des autres joueurs
+            for(Map.Entry<Agent, List<Carte>> mains : autresMains.entrySet()){
+                List<Carte> mainAgent = mains.getValue();
+                for(Carte carte : mainAgent){
+                    for(Set domaine :listDomainesCartes){
+                        boolean test = domaine.remove(carte);
+                        if(test){
+                            System.out.println("Carte supprimée : " + carte);
+                        }
+                    }
+                }
+            }
+
+            
             
         
             if (actionsPossibles.isEmpty()) {
@@ -97,7 +131,14 @@ public class PolitiqueSimpleHanabi implements Politique {
 
             Random random = new Random();
             
-            System.out.println("Les DOMAINES des cartes " + listDomainesCartes + "\n");
+            System.out.println("Les DOMAINES des cartes :\n");
+            for(int i =0;i<5;i++){
+                System.out.println("Domaine " + i+1 + " : " + listDomainesCartes.get(i) + "\n");
+            }
+
+
+
+
             /*
                 Si j'ai au moins une carte jouable dans au moins un domaine -> actionJouer (l'une des cartes en questions)
                 Sinon -> on passe à la suite
@@ -108,7 +149,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                 Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
                 Map<Agent, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
         
-                //Pour décider de si l'agent pose une carte(un agent ne pose une carte que si l'un de ses domaines ne contient que des cartes joaubles)
+                //Pour décider de si l'agent pose une carte(un agent ne pose une carte que si l'un de ses domaines ne contient que des cartes jouables)
                 for(int i = 0;i < 5; i++){
                     boolean domaineSur = true;
                     Set<Carte> domaine = listDomainesCartes.get(i);

@@ -3,7 +3,7 @@ package ville;
 import core.Agent;
 import core.Politique;
 
-public class AgentVille extends Agent{
+public class AgentVille extends Agent<EtatRDV>{
     private String position;
     public AgentVille(Politique politique,String id,String position){
         super(politique,id);

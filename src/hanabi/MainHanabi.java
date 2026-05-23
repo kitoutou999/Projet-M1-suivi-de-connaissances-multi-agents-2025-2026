@@ -31,17 +31,17 @@ public class MainHanabi{
         
         AgentHanabi a1 = new AgentHanabi(politiqueSimpleA1,"Alice",carteBase);
         AgentHanabi a2 = new AgentHanabi(politiqueSimpleA2,"Bob",carteBase);
-        List<Agent> agents = List.of(a1, a2);
+        List<Agent<?>> agents = List.of(a1, a2);
 
 
-        //Distribue les cartes aux agents 
-        Map<Agent,List<Carte>> mainsAgents = new HashMap<>();
-        for(Agent agent : agents){
+        //Distribue les cartes aux agents
+        Map<Agent<?>, List<Carte>> mainsAgents = new HashMap<>();
+        for(Agent<?> agent : agents){
             List<Carte> mainAgent = new ArrayList<>();
             for(int i = 0;i < 5;i++){
                 mainAgent.add(hanabi.retireCarte());
             }
-            for(Agent a : agents){
+            for(Agent<?> a : agents){
             	if(a != agent && a instanceof AgentHanabi aH){
             		aH.getAutresMains().put(agent, mainAgent);
             	}
@@ -54,15 +54,8 @@ public class MainHanabi{
         //Créer le jeu
         JeuHanabi jeu = new JeuHanabi(hanabi,agents,mainsAgents);
 
-        //Créer les politiques
-        Map<Agent, Politique> politiques = new HashMap<>();
-        politiques.put(a1, politiqueSimpleA1);
-        politiques.put(a2, politiqueSimpleA2);
-
-
         //Lance la simulation
-        Simulateur simulateur = new Simulateur(jeu, politiques);
-        simulateur.run(20);
+        new Simulateur(jeu, agents).run(20);
 
     }
 }

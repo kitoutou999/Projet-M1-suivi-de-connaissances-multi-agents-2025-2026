@@ -30,11 +30,11 @@ public class PolitiqueSimpleHanabi implements Politique {
     }
 
     @Override
-    public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles) {
+    public Action chooseAction(Agent<?> agent, Historique historique, List<Action> actionsPossibles) {
         //Divise les action possibles en groupes
         if(agent instanceof AgentHanabi agentHanabi){
             ObservationHanabi lastObs = null;
-            Map<Agent, List<Carte>> autresMains = null;
+            Map<Agent<?>, List<Carte>> autresMains = null;
 
             if (this.premierTour){
             	autresMains = agentHanabi.getAutresMains();
@@ -46,8 +46,8 @@ public class PolitiqueSimpleHanabi implements Politique {
             	autresMains = lastObs.getMainsAutresAgents();
                 //Filtre les domaines par rapport aux indiquations données par les autres joueurs
                 ActionJointe derActionsJointes = lastObs.getActions();
-                for(Map.Entry<Agent,Action> actions : derActionsJointes.getActions().entrySet()){
-                    Agent agentAction = actions.getKey();
+                for(Map.Entry<Agent<?>,Action> actions : derActionsJointes.getActions().entrySet()){
+                    Agent<?> agentAction = actions.getKey();
                     Action derAction = actions.getValue();
                     if(derAction instanceof ActionIndiquerCouleur daic && daic.agentCible() == agent){
                         EtatHanabi etatIndique = (EtatHanabi)daic.etat();
@@ -78,7 +78,7 @@ public class PolitiqueSimpleHanabi implements Politique {
             }
             
             //Filtre les domaines par rapport aux mains des autres joueurs
-            for(Map.Entry<Agent, List<Carte>> mains : autresMains.entrySet()){
+            for(Map.Entry<Agent<?>, List<Carte>> mains : autresMains.entrySet()){
                 List<Carte> mainAgent = mains.getValue();
                 for(Carte carte : mainAgent){
                     this.domaineDefault.remove(carte);
@@ -153,7 +153,7 @@ public class PolitiqueSimpleHanabi implements Politique {
             
             if(lastObs != null){
                 Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
-                Map<Agent, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
+                Map<Agent<?>, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
         
                 //Pour décider de si l'agent pose une carte(un agent ne pose une carte que si l'un de ses domaines ne contient que des cartes jouables)
                 for(int i = 0;i < 5; i++){
@@ -180,7 +180,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
 
                 //Pour décider de si l'agent donne une indication à un autre agent (Indique à un agent ag si ag a une carte jouable dans sa main)(choix entre indiqueValeur et IndiqueCouleur aléatoire pour l'instant)
-                for(Map.Entry<Agent,List<Carte>> entry : lastMains.entrySet()){
+                for(Map.Entry<Agent<?>,List<Carte>> entry : lastMains.entrySet()){
                     Agent agentCible = entry.getKey();
                     List<Carte> cartes = entry.getValue();
                     for(Carte carte: cartes){

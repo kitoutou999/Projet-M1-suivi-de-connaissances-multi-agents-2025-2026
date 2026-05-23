@@ -5,22 +5,21 @@ import core.*;
 public class JeuHanabi extends Jeu {
 
     private final Hanabi hanabi;
-    private final List<Agent> agents;
+    private final List<Agent<?>> agents;
     private final EtatHanabi etatInitial;
     private int boucleJeu;
 
-    public JeuHanabi(Hanabi hanabi,List<Agent> agents,Map<Agent,List<Carte>> mainsAgents){
+    public JeuHanabi(Hanabi hanabi, List<Agent<?>> agents, Map<Agent<?>, List<Carte>> mainsAgents){
         this.hanabi = hanabi;
         this.agents = agents;
         this.boucleJeu = 0;
-        this.etatInitial = new EtatHanabi(mainsAgents,creerJeu(),0,agents.get(boucleJeu));
-        
+        this.etatInitial = new EtatHanabi(mainsAgents, creerJeu(), 0, agents.get(boucleJeu));
     }
 
 
     //Initialise une pile pour chaque couleur
     private Map<String,Deque<Carte>> creerJeu(){
-        Map<String,Deque<Carte>> jeu = new HashMap<>(); 
+        Map<String,Deque<Carte>> jeu = new HashMap<>();
 
         for(String c : hanabi.getListCouleur()){
             jeu.put(c,new ArrayDeque<>());
@@ -36,7 +35,6 @@ public class JeuHanabi extends Jeu {
             if(pile.isEmpty() || pile.peek().getNumero() < hanabi.getValeurMaxDeC(couleur)){
                 return false;
             }
-            
         }
         return true;
     }
@@ -60,8 +58,8 @@ public class JeuHanabi extends Jeu {
     public Etat nextState(Etat etat, ActionJointe actions) {
         EtatHanabi e = (EtatHanabi) etat;
 
-        Map<Agent,List<Carte>> newMainsAgents = new HashMap<>(e.getMainsAgents()); //Créer une copie des mains de agents pour faire les nouvelles
-        for(Agent key : new HashSet<>(newMainsAgents.keySet())) {
+        Map<Agent<?>, List<Carte>> newMainsAgents = new HashMap<>(e.getMainsAgents());
+        for(Agent<?> key : new HashSet<>(newMainsAgents.keySet())) {
             newMainsAgents.put(key, new ArrayList<>(newMainsAgents.get(key)));
         }
 
@@ -72,7 +70,7 @@ public class JeuHanabi extends Jeu {
 
         int newNbErreur = e.getNbErreur(); //Créer une copie du nombre d'erreur pour mettre à jour
 
-        for (Agent agent : actions.getAgents()) {
+        for (Agent<?> agent : actions.getAgents()) {
             Action action = actions.getAction(agent);
 
             if (action instanceof ActionDefausse ad) { //Si défausse
@@ -125,7 +123,7 @@ public class JeuHanabi extends Jeu {
     }
 
     @Override
-    public List<Action> getActionsPossibles(Agent agent, Etat etat) {
+    public List<Action> getActionsPossibles(Agent<?> agent, Etat etat) {
         EtatHanabi e = (EtatHanabi) etat;
         List<Action> actions = new ArrayList<>();
 
@@ -133,14 +131,14 @@ public class JeuHanabi extends Jeu {
             for(int i = 0;i < 5; i++){
                 actions.add(new ActionDefausse(i));
                 actions.add(new ActionPoser(i));
-                for (Agent a : agents) {
+                for (Agent<?> a : agents) {
                     if (a != agent){
                         actions.add(new ActionIndiquerValeur(a,i,e));
                     }
                 }
             }
             for (String c : hanabi.getListCouleur()) {
-                for (Agent a : agents) {
+                for (Agent<?> a : agents) {
                     if (a != agent){
                         actions.add(new ActionIndiquerCouleur(a,c,e));
                     }
@@ -154,9 +152,12 @@ public class JeuHanabi extends Jeu {
     }
 
     @Override
-    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
-        return new ObservationHanabi(agent,nextState,actions);
+    public Observation makeObservation(Agent<?> agent, ActionJointe actions, Etat nextState, int step){
+        return new ObservationHanabi(agent, nextState, actions);
     }
 
-
+    @Override
+    public Observation simulerObservation(Agent<?> agent, Transition<? extends Etat> t, int step) {
+        return new ObservationHanabi(agent, t.suivant(), t.action());
+    }
 }

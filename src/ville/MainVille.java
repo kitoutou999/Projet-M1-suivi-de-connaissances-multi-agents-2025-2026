@@ -53,25 +53,20 @@ public class MainVille {
 
         AgentVille a1 = new AgentVille(politiqueAlice, "Alice", departAlice);
         AgentVille a2 = new AgentVille(politiqueBob,   "Bob",   departBob);
-        List<Agent> agents = List.of(a1, a2);
+        List<Agent<?>> agents = List.of(a1, a2);
 
-        Map<Agent, String> positionsDebut = new HashMap<>();
+        Map<Agent<?>, String> positionsDebut = new HashMap<>();
         positionsDebut.put(a1, departAlice);
         positionsDebut.put(a2, departBob);
 
         JeuRDV jeu = new JeuRDV(ville, lieuRDV, agents, positionsDebut);
 
         // Attacher un BeliefState à Alice
-        BeliefStateFilterVille filtre = new BeliefStateFilterVille(jeu.getMode());
         List<EtatRDV> etatsInitiaux = new ArrayList<>();
         etatsInitiaux.add((EtatRDV) jeu.getInitialState());
-        core.BeliefState<EtatRDV> bs = new core.BeliefState<>(etatsInitiaux, filtre, jeu, agents);
+        core.BeliefState<EtatRDV> bs = new core.BeliefState<>(etatsInitiaux, new core.BeliefStateFilter<>(), jeu, agents);
         a1.setBeliefState(bs);
 
-        Map<Agent, Politique> politiques = new HashMap<>();
-        politiques.put(a1, politiqueAlice);
-        politiques.put(a2, politiqueBob);
-
-        new Simulateur(jeu, politiques).run(50);
+        new Simulateur(jeu, agents).run(50);
     }
 }

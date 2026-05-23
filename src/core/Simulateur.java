@@ -1,23 +1,22 @@
 package core;
 
-import java.util.Map;
+import java.util.List;
 
 
 public class Simulateur {
     private final Jeu jeu;
-    private final Map<Agent, Politique> politiques;
+    private final List<Agent<?>> agents;
 
-    public Simulateur(Jeu jeu, Map<Agent, Politique> politiques) {
+    public Simulateur(Jeu jeu, List<Agent<?>> agents) {
         this.jeu = jeu;
-        this.politiques = politiques;
+        this.agents = agents;
     }
-
 
     public void run(int maxStep) {
         Etat etatCourant = jeu.getInitialState();
         int step = 0;
 
-        System.out.println("État initial : " + etatCourant+"\n");
+        System.out.println("État initial : " + etatCourant + "\n");
 
         while (!jeu.isFinal(etatCourant) && step < maxStep) {
             System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m");
@@ -25,12 +24,9 @@ public class Simulateur {
             ActionJointe actionJointe = new ActionJointe();
 
             // Phase 1 : tous les agents choisissent leur action
-            for (Map.Entry<Agent, Politique> entry : politiques.entrySet()) {
-                Agent agent = entry.getKey();
-                Politique politique = entry.getValue();
-
+            for (Agent<?> agent : agents) {
                 var actionsPossibles = jeu.getActionsPossibles(agent, etatCourant);
-                Action action = politique.chooseAction(agent, agent.getHistorique(), actionsPossibles);
+                Action action = agent.chooseAction(actionsPossibles);
                 actionJointe.addAction(agent, action);
             }
 
@@ -38,8 +34,7 @@ public class Simulateur {
             etatCourant = jeu.nextState(etatCourant, actionJointe);
 
             // Phase 3 : chaque agent observe le nouvel état
-            for (Map.Entry<Agent, Politique> entry : politiques.entrySet()) {
-                Agent agent = entry.getKey();
+            for (Agent<?> agent : agents) {
                 Observation obs = jeu.makeObservation(agent, actionJointe, etatCourant, step);
                 agent.inform(obs, actionJointe.getAction(agent));
 
@@ -48,7 +43,7 @@ public class Simulateur {
             }
 
             String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");
-            System.out.println("  "+ligneAction );
+            System.out.println("  " + ligneAction);
             System.out.println("  \033[1mEtat\033[0m : " + etatCourant);
             System.out.println();
         }

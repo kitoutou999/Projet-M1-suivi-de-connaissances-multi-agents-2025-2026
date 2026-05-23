@@ -8,11 +8,11 @@ public class JeuRDV extends Jeu {
 
     private final Ville ville;
     private final String lieuRDV;
-    private final List<Agent> agents;
+    private final List<Agent<?>> agents;
     private final EtatRDV etatInitial;
     private final int mode;//1 pour simple avec route fermée définitivement.
 
-    public JeuRDV(Ville ville, String lieuRDV, List<Agent> agents, Map<Agent, String> positionsInitiales) {
+    public JeuRDV(Ville ville, String lieuRDV, List<Agent<?>> agents, Map<Agent<?>, String> positionsInitiales) {
         this.ville = ville;
         this.lieuRDV = lieuRDV;
         this.agents = agents;
@@ -43,7 +43,7 @@ public class JeuRDV extends Jeu {
     public Etat nextState(Etat etat, ActionJointe actions) {
         EtatRDV e = (EtatRDV) etat;
 
-        Map<Agent, String> nouvellesPositions = new HashMap<>(e.getPositions());
+        Map<Agent<?>, String> nouvellesPositions = new HashMap<>(e.getPositions());
         Map<String, List<Message>> nouveauxMessages = new HashMap<>(e.getMessagesMap());
         // On recrée les listes pour éviter les effets de bord sur l'ancien état
         for(String key : new HashSet<>(nouveauxMessages.keySet())) {
@@ -70,7 +70,7 @@ public class JeuRDV extends Jeu {
     }
 
     @Override
-    public List<Action> getActionsPossibles(Agent agent, Etat etat) {
+    public List<Action> getActionsPossibles(Agent<?> agent, Etat etat) {
         EtatRDV e = (EtatRDV) etat;
 
         String pos = e.getPosition(agent);
@@ -86,7 +86,14 @@ public class JeuRDV extends Jeu {
     }
 
     @Override
-    public Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step){
-        return new ObservationVille(agent,nextState,actions,step,this.mode);
+    public Observation makeObservation(Agent<?> agent, ActionJointe actions, Etat nextState, int step) {
+        return ObservationVille.creer(agent, nextState, actions, step, this.mode);
+    }
+
+    @Override
+    public Observation simulerObservation(Agent<?> agent, Transition<? extends Etat> t, int step) {
+        EtatRDV precedent = (EtatRDV) t.precedent();
+        String posAvant = precedent.getPosition(agent);
+        return ObservationVille.simuler(agent, (EtatRDV) t.suivant(), t.action(), posAvant, step, this.mode);
     }
 }

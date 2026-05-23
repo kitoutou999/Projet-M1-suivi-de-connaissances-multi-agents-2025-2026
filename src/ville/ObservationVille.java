@@ -6,23 +6,23 @@ import java.util.*;
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
 
-    public ObservationVille(Agent agent, Etat nextState, ActionJointe actions, int step, int mode) {
+    private ObservationVille(Agent<?> agent, EtatRDV etat, ActionJointe actions, String positionAvant, int step, int mode) {
+        construireMessages(agent, etat, actions, positionAvant, step, mode);
+        this.name = agent.toString() + message.toString();
+    }
+
+    public static ObservationVille creer(Agent<?> agent, Etat nextState, ActionJointe actions, int step, int mode) {
         EtatRDV nextStateRDV = (EtatRDV) nextState;
         AgentVille agentV = (AgentVille) agent;
         String positionAvant = agentV.getPosition();
-        construireMessages(agent, nextStateRDV, actions, positionAvant, step, mode);
+        ObservationVille obs = new ObservationVille(agent, nextStateRDV, actions, positionAvant, step, mode);
         agentV.setPosition(nextStateRDV.getPosition(agent));
-        this.name = agent.toString() + message.toString();
+        return obs;
     }
 
-    private ObservationVille(Agent agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
-        construireMessages(agent, etatHyp, actionsHyp, positionAvant, step, mode);
-        this.name = agent.toString() + message.toString();
-    }
-
-    private void construireMessages(Agent agent, EtatRDV etat, ActionJointe actions, String positionAvant, int step, int mode) {
+    private void construireMessages(Agent<?> agent, EtatRDV etat, ActionJointe actions, String positionAvant, int step, int mode) {
         String agentPos = etat.getPosition(agent);
-        for (Map.Entry<Agent, String> entry : etat.getPositions().entrySet()) {
+        for (Map.Entry<Agent<?>, String> entry : etat.getPositions().entrySet()) {
             if (entry.getValue().equals(agentPos) && !entry.getKey().equals(agent))
                 message.add(new MessageAgentPresent(step, agentPos, entry.getKey()));
         }
@@ -36,8 +36,30 @@ public class ObservationVille extends Observation{
         for (Message m : etat.getMessages(agentPos)) message.add(m);
     }
 
-    public static ObservationVille simuler(Agent agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
+    public static ObservationVille simuler(Agent<?> agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
         return new ObservationVille(agent, etatHyp, actionsHyp, positionAvant, step, mode);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ObservationVille other)) return false;
+        return messagesCles().equals(other.messagesCles());
+    }
+
+    @Override
+    public int hashCode() {
+        return messagesCles().hashCode();
+    }
+
+    private Set<String> messagesCles() {
+        Set<String> keys = new HashSet<>();
+        for (Message m : message) {
+            if (m instanceof MessageAgentPresent map)
+                keys.add("present:" + map.getAgent().getId());
+            else if (m instanceof MessageRouteFerme mrf)
+                keys.add("ferme:" + mrf.getName());
+        }
+        return keys;
     }
 
     public List<Message> getMessage(){

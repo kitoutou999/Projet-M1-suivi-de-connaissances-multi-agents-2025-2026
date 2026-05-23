@@ -11,7 +11,9 @@ public abstract class Jeu {
 
     public abstract Etat nextState(Etat etat, ActionJointe actions);
 
-    public abstract List<Action> getActionsPossibles(Agent agent, Etat etat);
+    public abstract List<Action> getActionsPossibles(Agent<?> agent, Etat etat);
 
-    public abstract Observation makeObservation(Agent agent,ActionJointe actions,Etat nextState,int step);
+    public abstract Observation makeObservation(Agent<?> agent, ActionJointe actions, Etat nextState, int step);
+
+    public abstract Observation simulerObservation(Agent<?> agent, Transition<? extends Etat> t, int step);
 }

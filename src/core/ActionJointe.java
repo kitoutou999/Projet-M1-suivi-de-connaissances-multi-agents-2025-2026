@@ -6,21 +6,21 @@ import java.util.Set;
 
 
 public class ActionJointe {
-    private final Map<Agent, Action> actions = new HashMap<>();
+    private final Map<Agent<?>, Action> actions = new HashMap<>();
 
-    public void addAction(Agent agent, Action action) {
+    public void addAction(Agent<?> agent, Action action) {
         actions.put(agent, action);
     }
 
-    public Action getAction(Agent agent) {
+    public Action getAction(Agent<?> agent) {
         return actions.get(agent);
     }
 
-    public Set<Agent> getAgents() {
+    public Set<Agent<?>> getAgents() {
         return actions.keySet();
     }
 
-    public Map<Agent, Action> getActions(){
+    public Map<Agent<?>, Action> getActions(){
         return actions;
     }
 

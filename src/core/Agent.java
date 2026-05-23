@@ -1,11 +1,11 @@
 package core;
 import java.util.*;
 
-public class Agent{
+public class Agent<E extends Etat>{
     private Politique politique;
     private String id;
     private Historique historique;
-    private BeliefState<?> beliefState = null;
+    private BeliefState<E> beliefState = null;
     public Agent(Politique politique,String id){
         this.politique = politique;
         this.id = id;
@@ -28,6 +28,6 @@ public class Agent{
     public Historique getHistorique(){
         return this.historique;
     }
-    public void setBeliefState(BeliefState<?> bs) { this.beliefState = bs; }
-    public BeliefState<?> getBeliefState() { return this.beliefState; }
+    public void setBeliefState(BeliefState<E> bs) { this.beliefState = bs; }
+    public BeliefState<E> getBeliefState() { return this.beliefState; }
 }

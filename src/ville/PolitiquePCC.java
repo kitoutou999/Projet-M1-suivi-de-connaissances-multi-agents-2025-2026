@@ -65,12 +65,11 @@ public class PolitiquePCC implements Politique{
 	}
 
 
-	private Map<Agent, Set<String>> getPositionsPossibles(AgentVille agent){
-		core.BeliefState<?> bs = agent.getBeliefState();
+	private Map<Agent<?>, Set<String>> getPositionsPossibles(AgentVille agent){
+		core.BeliefState<EtatRDV> bs = agent.getBeliefState();
 		if(bs == null) return Map.of();
-		Map<Agent, Set<String>> result = new HashMap<>();
-		for(Object o : bs.getEtatsCompatibles()){
-			EtatRDV e = (EtatRDV) o;
+		Map<Agent<?>, Set<String>> result = new HashMap<>();
+		for(EtatRDV e : bs.getEtatsCompatibles()){
 			e.getPositions().forEach((a, pos) -> {
 				if(!a.equals(agent))
 					result.computeIfAbsent(a, k -> new HashSet<>()).add(pos);
@@ -101,7 +100,7 @@ public class PolitiquePCC implements Politique{
 		return meilleurDepot;
 	}
 
-	public Action chooseAction(Agent agent, Historique historique, List<Action> actionsPossibles){
+	public Action chooseAction(Agent<?> agent, Historique historique, List<Action> actionsPossibles){
 		if(!(agent instanceof AgentVille agentVille)) return null;
 
 		// Mise a jour des routes fermees
@@ -147,8 +146,8 @@ public class PolitiquePCC implements Politique{
 
 		// Affichage
 		String beliefsStr = "";
-		Map<Agent, Set<String>> posPossibles = getPositionsPossibles(agentVille);
-		for(Map.Entry<Agent, Set<String>> e : posPossibles.entrySet()){
+		Map<Agent<?>, Set<String>> posPossibles = getPositionsPossibles(agentVille);
+		for(Map.Entry<Agent<?>, Set<String>> e : posPossibles.entrySet()){
 			beliefsStr += " " + e.getKey().getId() + "->" + e.getValue();
 		}
 		String ligne = "  " + agentVille.getId() + " (" + agentVille.getPosition() + ")";

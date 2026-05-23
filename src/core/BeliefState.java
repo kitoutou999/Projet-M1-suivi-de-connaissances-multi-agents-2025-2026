@@ -16,10 +16,10 @@ public class BeliefState<E extends Etat> {
         this.tousLesAgents = tousLesAgents;
     }
 
-    public void mettreAJour(Agent observateur, Observation obsReelle, int step) {
+    public void mettreAJour(Agent observateur, Observation obsReelle, Action actionPropre, int step) {
         List<E> nouvelEnsemble = new ArrayList<>();
         for (E etat : etatsCompatibles)
-            for (Transition<E> t : filtre.transitions(etat, jeu, tousLesAgents))
+            for (Transition<E> t : filtre.transitions(etat, jeu, tousLesAgents, observateur, actionPropre))
                 if (filtre.estCompatible(t, observateur, obsReelle, jeu, step) && !nouvelEnsemble.contains(t.suivant()))
                     nouvelEnsemble.add(t.suivant());
         if (!nouvelEnsemble.isEmpty()) etatsCompatibles = nouvelEnsemble;

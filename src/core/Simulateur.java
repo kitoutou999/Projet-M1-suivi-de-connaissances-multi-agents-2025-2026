@@ -44,7 +44,7 @@ public class Simulateur {
                 agent.inform(obs, actionJointe.getAction(agent));
 
                 if (agent.getBeliefState() != null)
-                    agent.getBeliefState().mettreAJour(agent, obs, step);
+                    agent.getBeliefState().mettreAJour(agent, obs, actionJointe.getAction(agent), step);
             }
 
             String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");

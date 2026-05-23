@@ -16,13 +16,15 @@ public class BeliefStateFilterVille implements BeliefStateFilter<EtatRDV> {
      * Pour chaque combinaison d'actions possibles de tous les agents, calcule l'état suivant via nextState.
      */
     @Override
-    public Set<Transition<EtatRDV>> transitions(EtatRDV etat, Jeu jeu, List<Agent> tousLesAgents) {
+    public Set<Transition<EtatRDV>> transitions(EtatRDV etat, Jeu jeu, List<Agent> tousLesAgents, Agent observateur, Action actionPropre) {
         List<List<Map.Entry<Agent, Action>>> listes = new ArrayList<>();
         for (Agent agent : tousLesAgents) {
-            List<Action> actions = jeu.getActionsPossibles(agent, etat);
             List<Map.Entry<Agent, Action>> pairs = new ArrayList<>();
-            for (Action a : actions){
-                pairs.add(Map.entry(agent, a));
+            if (agent.equals(observateur) && actionPropre != null) {
+                pairs.add(Map.entry(agent, actionPropre));
+            } else {
+                for (Action a : jeu.getActionsPossibles(agent, etat))
+                    pairs.add(Map.entry(agent, a));
             }
             listes.add(pairs);
         }

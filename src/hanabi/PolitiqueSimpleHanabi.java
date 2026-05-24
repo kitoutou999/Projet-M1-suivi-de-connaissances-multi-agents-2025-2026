@@ -154,7 +154,13 @@ public class PolitiqueSimpleHanabi implements Politique {
             if(lastObs != null){
                 Map<String,Deque<Carte>> lastJeu = lastObs.getEtatPiles(); 
                 Map<Agent<?>, List<Carte>> lastMains = lastObs.getMainsAutresAgents();
-        
+                boolean allDomainesEmpty = true;
+                for(int i = 0;i < 5; i++){
+                    Set<Carte> domaine = listDomainesCartes.get(i);
+                    if(!domaine.isEmpty()){
+                        allDomainesEmpty = false;
+                    }
+                }
                 //Pour décider de si l'agent pose une carte(un agent ne pose une carte que si l'un de ses domaines ne contient que des cartes jouables)
                 for(int i = 0;i < 5; i++){
                     boolean domaineSur = true;
@@ -162,8 +168,11 @@ public class PolitiqueSimpleHanabi implements Politique {
                     for(Carte carte : domaine){
                         String couleurCarte = carte.getCouleur();
                         Deque<Carte> pile = lastJeu.get(couleurCarte);
-                        
-                        if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
+                        //Ajout pour l'amélioration du début de la politique mais normalement cette partie là était déja faite.
+                        if(allDomainesEmpty && carte.getNumero() == 1){
+                            continue;
+                        }
+                        else if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                             continue;
                         }
                         else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
@@ -188,7 +197,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
                         if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                             for(Action a : actionInfo){ 
-                                if (random.nextBoolean()){ 
+                                if (random.nextBoolean() || allDomainesEmpty){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }

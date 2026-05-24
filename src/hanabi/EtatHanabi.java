@@ -35,6 +35,16 @@ public class EtatHanabi implements Etat {
         return agentQuiJoue;
     }
 
+    public int getScore(){
+        int score = 0;
+
+        for(Deque<Carte> deque : jeu.values()){
+            score += deque.size();
+        }
+
+        return score;
+    }
+
     @Override
     public String toString() {
         String res = "Etat Hanabi :\n";
@@ -49,6 +59,7 @@ public class EtatHanabi implements Etat {
         }
         res += "C'est l'agent " + agentQuiJoue + " qui joue\n";
         res += "Le jeu : " + jeu + "\n";
+        res += "Score : " + this.getScore() + "\n";
         res += "Le nombre d'erreur est de " + nbErreur + "\n";
         return res;
     }

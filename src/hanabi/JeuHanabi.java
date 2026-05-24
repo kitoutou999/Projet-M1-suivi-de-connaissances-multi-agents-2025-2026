@@ -89,9 +89,19 @@ public class JeuHanabi extends Jeu {
 
                 if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                     pile.push(carte);
+                    if (!hanabi.getPioche().isEmpty()) {
+                        (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
+                    } else {
+                        (newMainsAgents.get(agent)).remove(posCarte);
+                    }
                 }
                 else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
                     pile.push(carte);
+                    if (!hanabi.getPioche().isEmpty()) {
+                        (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
+                    } else {
+                        (newMainsAgents.get(agent)).remove(posCarte);
+                    }
                 }
                 else{ //Si l'agent s'est trompé
                     if (!hanabi.getPioche().isEmpty()) {
@@ -102,13 +112,7 @@ public class JeuHanabi extends Jeu {
                     newNbErreur += 1;
                 }
 
-                if (!hanabi.getPioche().isEmpty()) {
-                    (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
-                } else {
-                    (newMainsAgents.get(agent)).remove(posCarte);
-                }
 
-                
 
             }
         }
@@ -131,16 +135,18 @@ public class JeuHanabi extends Jeu {
             for(int i = 0;i < 5; i++){
                 actions.add(new ActionDefausse(i));
                 actions.add(new ActionPoser(i));
-                for (Agent<?> a : agents) {
-                    if (a != agent){
-                        actions.add(new ActionIndiquerValeur(a,i,e));
-                    }
-                }
             }
-            for (String c : hanabi.getListCouleur()) {
-                for (Agent<?> a : agents) {
-                    if (a != agent){
-                        actions.add(new ActionIndiquerCouleur(a,c,e));
+            for (Agent<?> a : agents) {
+                if (a != agent){
+                    Set<Integer> valeursVues = new HashSet<>();
+                    Set<String> couleursVues = new HashSet<>();
+                    for (Carte c : e.getMainAgent(a)) {
+                        if (valeursVues.add(c.getNumero())) {
+                            actions.add(new ActionIndiquerValeur(a, c.getNumero(), e));
+                        }
+                        if (couleursVues.add(c.getCouleur())) {
+                            actions.add(new ActionIndiquerCouleur(a, c.getCouleur(), e));
+                        }
                     }
                 }
             }

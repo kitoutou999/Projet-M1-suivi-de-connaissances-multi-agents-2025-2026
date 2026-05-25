@@ -13,7 +13,7 @@ public class JeuHanabi extends Jeu {
         this.hanabi = hanabi;
         this.agents = agents;
         this.boucleJeu = 0;
-        this.etatInitial = new EtatHanabi(mainsAgents, creerJeu(), 0, agents.get(boucleJeu));
+        this.etatInitial = new EtatHanabi(mainsAgents, creerJeu(), 0, agents.get(boucleJeu),hanabi.getPioche().size());
     }
 
 
@@ -123,7 +123,7 @@ public class JeuHanabi extends Jeu {
             boucleJeu = 0;
         }
         
-        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu));
+        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu),this.hanabi.getPioche().size());
     }
 
     @Override

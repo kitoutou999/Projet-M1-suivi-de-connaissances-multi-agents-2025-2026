@@ -55,7 +55,7 @@ public class MainHanabi{
         JeuHanabi jeu = new JeuHanabi(hanabi,agents,mainsAgents);
 
         //Lance la simulation
-        new Simulateur(jeu, agents).run(20);
+        new Simulateur(jeu, agents).run(2000);
 
     }
 }

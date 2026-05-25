@@ -9,11 +9,13 @@ public class ObservationHanabi extends Observation {
     private final int nbErreurs;
     private final Agent<?> agent;
     private final ActionJointe actions;
+    private final int sizePioche;
 
     public ObservationHanabi(Agent<?> agent, Etat nextState, ActionJointe actions) {
         EtatHanabi etat = (EtatHanabi) nextState;
         this.agent = agent;
         this.actions = actions;
+        this.sizePioche = etat.getSizePioche();
 
         // Mains des autres agents (pas la sienne)
         this.mainsAutresAgents = new HashMap<>();
@@ -47,6 +49,10 @@ public class ObservationHanabi extends Observation {
 
     public ActionJointe getActions(){
         return actions;
+    }
+
+    public int getSizePioche(){
+        return this.sizePioche;
     }
 
     @Override

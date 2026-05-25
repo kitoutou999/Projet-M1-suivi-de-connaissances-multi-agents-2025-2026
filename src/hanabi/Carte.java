@@ -22,4 +22,17 @@ public class Carte {
     public String toString(){
         return "Carte : " + this.numero + "|" + this.couleur;
     }
+
+    public boolean isPlayable(Map<String, Deque<Carte>> pile){
+        for (Map.Entry<String, Deque<Carte>> entry : pile.entrySet()) {
+            String cle = entry.getKey();
+            Deque<Carte> deque = entry.getValue();
+            if(cle.equals(this.couleur)){
+                if(deque.contains(this.numero)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

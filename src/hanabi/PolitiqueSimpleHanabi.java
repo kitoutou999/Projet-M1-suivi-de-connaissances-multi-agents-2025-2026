@@ -229,11 +229,54 @@ public class PolitiqueSimpleHanabi implements Politique {
 
                 }
 
+                //Je me défausse d'une carte que je ne peux pas jouer.
+                for(int i = 0;i<5;i++){
+                    boolean isThisDomainNull = true;
+                    Set<Carte> domaine = listDomainesCartes.get(i);
+                    for(Carte carte : domaine){
+                        if(carte.isPlayable(lastObs.getEtatPiles())){
+                            isThisDomainNull = false;
+                        }
+                    }
+                    if(isThisDomainNull){
+                        listDomainesCartes.set(i,new HashSet<Carte>(this.domaineDefault));
+                        return actionDefausse.get(i);
+                    }
+                }
 
+                //Je donne un indice sur une carte qui ne peut pas être jouer tt de suite mais potentiellement plus tard.
+                for(Map.Entry<Agent<?>,List<Carte>> entry : lastMains.entrySet()){
+                    Agent agentCible = entry.getKey();
+                    List<Carte> cartes = entry.getValue();
+                    for(Carte carte: cartes){
+                        Deque<Carte> pile = lastJeu.get(carte.getCouleur());
+                        if(!pile.isEmpty() && carte.getNumero() >= (pile.peek()).getNumero() + 1){
+                            for(Action a : actionInfo){
+                                //Enlever l'aléatoire et utiliser les croyances.
+                                if(random.nextBoolean()){ 
+                                    if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
+                                        return aiv;
+                                    }
+                                }
+                                else{ 
+                                    if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
+                                        return aic;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(lastObs.getSizePioche()>1){
+                    int posRandom = random.nextInt(actionDefausse.size());
+                    listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));
+                    return actionDefausse.get(posRandom);  //Action défausse (choix de carte random pour l'instant)
+                }
             }
             int posRandom = random.nextInt(actionDefausse.size());
             listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));
             return actionDefausse.get(posRandom);  //Action défausse (choix de carte random pour l'instant)
+            
         }
         return null;
     }

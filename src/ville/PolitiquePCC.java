@@ -23,7 +23,26 @@ public class PolitiquePCC implements Politique{
 		this.lieuDepotMessage = null;
 	}
 
-	// BFS
+	private boolean autreAgentABesoinInfo(AgentVille moi, String routeFermee) {
+		Map<Agent<?>, Set<String>> positions = getPositionsPossibles(moi);
+		if (positions.isEmpty()) return true;
+
+		villeConnue.ouvrirLieu(routeFermee);
+		boolean besoinGlobal = false;
+		for (Map.Entry<Agent<?>, Set<String>> entry : positions.entrySet()) {
+			boolean besoin = false;
+			for (String pos : entry.getValue())
+				if (cheminDepuis(pos).contains(routeFermee)) { besoin = true; break; }
+			if (besoin) besoinGlobal = true;
+			System.out.println("  [2nd ordre] " + moi.getId() + " : "
+				+ entry.getKey().getId()
+				+ (besoin ? " a besoin" : " n'a PAS besoin")
+				+ " du message sur " + routeFermee);
+		}
+		villeConnue.fermerLieu(routeFermee);
+		return besoinGlobal;
+	}
+
 	private Map<String, String> bfs(String from){
 		if(from.equals(this.but)) return new HashMap<>();
 		Map<String, String> predecesseurs = new HashMap<>();
@@ -45,7 +64,6 @@ public class PolitiquePCC implements Politique{
 		return null; // pas de chemin
 	}
 
-	// chemin complet
 	private LinkedList<String> cheminDepuis(String from){
 		Map<String, String> pred = bfs(from);
 		LinkedList<String> path = new LinkedList<>();
@@ -59,12 +77,6 @@ public class PolitiquePCC implements Politique{
 		return path;
 	}
 
-	private String nextHop(String from){
-		LinkedList<String> path = cheminDepuis(from);
-		return path.isEmpty() ? from : path.getFirst();
-	}
-
-
 	private Map<Agent<?>, Set<String>> getPositionsPossibles(AgentVille agent){
 		core.BeliefState<EtatRDV> bs = agent.getBeliefState();
 		if(bs == null) return Map.of();
@@ -77,10 +89,16 @@ public class PolitiquePCC implements Politique{
 		}
 		return result;
 	}
-	//drop messaege sur chemin des autres agents
 	private String calculerMeilleurDepot(AgentVille agent, String maPosition){
-		Set<String> monChemin = new HashSet<>(this.chemin);
+		// Si agent sur ma position -> poster ici immédiatement
+		for(Set<String> possPossibles : getPositionsPossibles(agent).values()){
+			if(possPossibles.contains(maPosition)) return maPosition;
+		}
+
+		// Sinon chercher l'intersection d'un autres agents
+		Set<String> monChemin = new HashSet<>(cheminDepuis(maPosition));
 		monChemin.add(maPosition);
+		monChemin.remove(this.but); // Le RDV n'est pas un bon dépôt
 
 		String meilleurDepot = null;
 		int meilleurRang = Integer.MAX_VALUE;
@@ -108,16 +126,27 @@ public class PolitiquePCC implements Politique{
 		boolean recalculer = false;
 		if(!liste.isEmpty()){
 			Map.Entry<Action, Observation> entree = liste.get(liste.size() - 1);
+			Action derniereAction = entree.getKey();
+
 			for(Message m : ((ObservationVille) entree.getValue()).getMessage()){
 				if(m instanceof MessageRouteFerme routeFerme && !lieuxFermesConnus.contains(routeFerme.getName())){
 					lieuxFermesConnus.add(routeFerme.getName());
 					villeConnue.fermerLieu(routeFerme.getName());
-					messageAPropager = routeFerme;
 					recalculer = true;
 
-					String depot = calculerMeilleurDepot(agentVille, agentVille.getPosition());
-					lieuDepotMessage = depot != null ? depot : agentVille.getPosition();
-					doitPoserMessage = true;
+					// Ne met le msg que si l'agent a lui meme essayé d'aller sur cette route
+					boolean aEssayeRoute = derniereAction instanceof ActionDeplacement ad && ad.destination().equals(routeFerme.getName());
+
+					if (aEssayeRoute) {
+						messageAPropager = routeFerme;
+						if (autreAgentABesoinInfo(agentVille, routeFerme.getName())) {
+							String depot = calculerMeilleurDepot(agentVille, agentVille.getPosition());
+							lieuDepotMessage = depot != null ? depot : agentVille.getPosition();
+							doitPoserMessage = true;
+						} else {
+							System.out.println("  " + agentVille.getId() + " : les autres agents ont pas besoin du message sur " + routeFerme.getName() + " (second ordre)");
+						}
+					}
 				}
 			}
 		}

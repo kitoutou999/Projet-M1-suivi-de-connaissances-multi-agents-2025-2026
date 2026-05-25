@@ -15,6 +15,10 @@ public class Ville {
         lieuxFermes.add(lieu);
     }
 
+    public void ouvrirLieu(String lieu) {
+        lieuxFermes.remove(lieu);
+    }
+
     public boolean estOuvert(String lieu) {
         return !lieuxFermes.contains(lieu);
     }

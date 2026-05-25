@@ -23,8 +23,13 @@ public class ObservationVille extends Observation{
     private void construireMessages(Agent<?> agent, EtatRDV etat, ActionJointe actions, String positionAvant, int step, int mode) {
         String agentPos = etat.getPosition(agent);
         for (Map.Entry<Agent<?>, String> entry : etat.getPositions().entrySet()) {
-            if (entry.getValue().equals(agentPos) && !entry.getKey().equals(agent))
-                message.add(new MessageAgentPresent(step, agentPos, entry.getKey()));
+            Agent<?> autreAgent = entry.getKey();
+            if (entry.getValue().equals(agentPos) && !autreAgent.equals(agent)) {
+                message.add(new MessageAgentPresent(step, agentPos, autreAgent));
+                Action autreAction = actions.getAction(autreAgent);
+                if (autreAction instanceof ActionDeplacement ad && !entry.getValue().equals(ad.destination()))
+                    message.add(new MessageAgentBloque(step, autreAgent, ad.destination()));
+            }
         }
         if (agentPos.equals(positionAvant) && actions.getAction(agent) instanceof ActionDeplacement ad) {
             if (mode == 1) message.add(new MessageRouteFerme(step, ad.destination()));
@@ -58,6 +63,8 @@ public class ObservationVille extends Observation{
                 keys.add("present:" + map.getAgent().getId());
             else if (m instanceof MessageRouteFerme mrf)
                 keys.add("ferme:" + mrf.getName());
+            else if (m instanceof MessageAgentBloque mab)
+                keys.add("bloque:" + mab.getAgent().getId() + ":" + mab.getDestination());
         }
         return keys;
     }

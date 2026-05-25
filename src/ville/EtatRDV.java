@@ -7,14 +7,21 @@ import java.util.*;
 
 public class EtatRDV implements Etat {
     private final Map<Agent<?>, String> positions;
-    private final Map<String, List<Message>> messages; // Lieu -> liste de messages
+    private final Map<String, List<Message>> messages;
+    private final Map<Agent<?>, Set<String>> routesFermeesConnues;
 
-    public EtatRDV(Map<Agent<?>, String> positions, Map<String, List<Message>> messages) {
+    public EtatRDV(Map<Agent<?>, String> positions, Map<String, List<Message>> messages, Map<Agent<?>, Set<String>> routesFermeesConnues) {
         this.positions = new HashMap<>(positions);
         this.messages = new HashMap<>();
-        for (Map.Entry<String, List<Message>> entry : messages.entrySet()) {
+        for (Map.Entry<String, List<Message>> entry : messages.entrySet())
             this.messages.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
+        this.routesFermeesConnues = new HashMap<>();
+        for (Map.Entry<Agent<?>, Set<String>> entry : routesFermeesConnues.entrySet())
+            this.routesFermeesConnues.put(entry.getKey(), new HashSet<>(entry.getValue()));
+    }
+
+    public EtatRDV(Map<Agent<?>, String> positions, Map<String, List<Message>> messages) {
+        this(positions, messages, new HashMap<>());
     }
 
     public String getPosition(Agent<?> agent) {
@@ -33,10 +40,19 @@ public class EtatRDV implements Etat {
         return messages;
     }
 
+    public Set<String> getRoutesConnues(Agent<?> agent) {
+        return routesFermeesConnues.getOrDefault(agent, Collections.emptySet());
+    }
+
+    public Map<Agent<?>, Set<String>> getRoutesFermeesConnues() {
+        return routesFermeesConnues;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof EtatRDV other)) return false;
         if (!messages.equals(other.messages)) return false;
+        if (!routesFermeesConnues.equals(other.routesFermeesConnues)) return false;
         if (positions.size() != other.positions.size()) return false;
         for (Map.Entry<Agent<?>, String> entry : positions.entrySet()) {
             boolean trouve = false;

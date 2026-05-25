@@ -23,23 +23,36 @@ public class PolitiquePCC implements Politique{
 		this.lieuDepotMessage = null;
 	}
 
+	// Second ordre : vérifie si au moins un autre agent a besoin de l'info et ne la connait pas déjà.
 	private boolean autreAgentABesoinInfo(AgentVille moi, String routeFermee) {
-		Map<Agent<?>, Set<String>> positions = getPositionsPossibles(moi);
-		if (positions.isEmpty()) return true;
+		BeliefState<EtatRDV> bs = moi.getBeliefState();
+		if (bs == null || bs.getEtatsCompatibles().isEmpty()) return true;
 
 		villeConnue.ouvrirLieu(routeFermee);
-		boolean besoinGlobal = false;
-		for (Map.Entry<Agent<?>, Set<String>> entry : positions.entrySet()) {
-			boolean besoin = false;
-			for (String pos : entry.getValue())
-				if (cheminDepuis(pos).contains(routeFermee)) { besoin = true; break; }
-			if (besoin) besoinGlobal = true;
-			System.out.println("  [2nd ordre] " + moi.getId() + " : "
-				+ entry.getKey().getId()
-				+ (besoin ? " a besoin" : " n'a PAS besoin")
-				+ " du message sur " + routeFermee);
+		Map<Agent<?>, Boolean> besoinParAgent = new LinkedHashMap<>();
+		for (EtatRDV etat : bs.getEtatsCompatibles()) {
+			for (Map.Entry<Agent<?>, String> entry : etat.getPositions().entrySet()) {
+				Agent<?> autreAgent = entry.getKey();
+				if (autreAgent.equals(moi)) continue;
+				boolean cheminPassePar = cheminDepuis(entry.getValue()).contains(routeFermee);
+				boolean dejaInforme = etat.getRoutesConnues(autreAgent).contains(routeFermee);
+				if (cheminPassePar && !dejaInforme)
+					besoinParAgent.put(autreAgent, true);
+				else
+					besoinParAgent.putIfAbsent(autreAgent, false);
+			}
 		}
 		villeConnue.fermerLieu(routeFermee);
+
+		boolean besoinGlobal = false;
+		for (Map.Entry<Agent<?>, Boolean> e : besoinParAgent.entrySet()) {
+			boolean besoin = e.getValue();
+			if (besoin) besoinGlobal = true;
+			System.out.println("  [2nd ordre] " + moi.getId() + " : "
+				+ e.getKey().getId()
+				+ (besoin ? " a besoin" : " n'a PAS besoin (déjà informé)")
+				+ " du message sur " + routeFermee);
+		}
 		return besoinGlobal;
 	}
 
@@ -129,6 +142,12 @@ public class PolitiquePCC implements Politique{
 			Action derniereAction = entree.getKey();
 
 			for(Message m : ((ObservationVille) entree.getValue()).getMessage()){
+				if(m instanceof MessageAgentBloque mab && !lieuxFermesConnus.contains(mab.getDestination())){
+					lieuxFermesConnus.add(mab.getDestination());
+					villeConnue.fermerLieu(mab.getDestination());
+					recalculer = true;
+					// Observé chez un colocataire -> on sait, mais pas besoin de relayer
+				}
 				if(m instanceof MessageRouteFerme routeFerme && !lieuxFermesConnus.contains(routeFerme.getName())){
 					lieuxFermesConnus.add(routeFerme.getName());
 					villeConnue.fermerLieu(routeFerme.getName());

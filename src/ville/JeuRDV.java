@@ -45,10 +45,12 @@ public class JeuRDV extends Jeu {
 
         Map<Agent<?>, String> nouvellesPositions = new HashMap<>(e.getPositions());
         Map<String, List<Message>> nouveauxMessages = new HashMap<>(e.getMessagesMap());
-        // On recrée les listes pour éviter les effets de bord sur l'ancien état
-        for(String key : new HashSet<>(nouveauxMessages.keySet())) {
+        for(String key : new HashSet<>(nouveauxMessages.keySet()))
             nouveauxMessages.put(key, new ArrayList<>(nouveauxMessages.get(key)));
-        }
+
+        Map<Agent<?>, Set<String>> nouvellesConnaissances = new HashMap<>();
+        for (Map.Entry<Agent<?>, Set<String>> entry : e.getRoutesFermeesConnues().entrySet())
+            nouvellesConnaissances.put(entry.getKey(), new HashSet<>(entry.getValue()));
 
         for (Agent agent : actions.getAgents()) {
             Action action = actions.getAction(agent);
@@ -58,14 +60,15 @@ public class JeuRDV extends Jeu {
                 String destination = ad.destination();
                 if (ville.estOuvert(destination)) {
                     nouvellesPositions.put(agent, destination);
+                } else {
+                    nouvellesConnaissances.computeIfAbsent(agent, k -> new HashSet<>()).add(destination);
                 }
             } else if (action instanceof ActionMessage am) {
                 nouveauxMessages.computeIfAbsent(positionActuelle, k -> new ArrayList<>()).add(am.contenu());
             }
-            // ActionRester ne fait rien explicitement
         }
 
-        return new EtatRDV(nouvellesPositions, nouveauxMessages);
+        return new EtatRDV(nouvellesPositions, nouveauxMessages, nouvellesConnaissances);
 
     }
 

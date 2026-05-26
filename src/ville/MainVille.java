@@ -5,7 +5,7 @@ import java.util.*;
 
 public class MainVille {
     public static void main(String[] args) {
-        scenarioSecondOrdreVrai();
+        scenarioSecondOrdreMixte();
     }
 
     // Alice et Bob démarrent au même endroit, tentent tous les deux Carrefour.
@@ -60,8 +60,8 @@ public class MainVille {
 
     // Scénario principal : deux arbres binaires, Bob contourne un pont fermé
     static void scenarioPrincipal() {
-        int profondeur = 4;
-        int nbPonts = 3;
+        int profondeur = 10;
+        int nbPonts = 5;
 
         Ville ville = Ville.genererDeuxArbres(profondeur, nbPonts);
 

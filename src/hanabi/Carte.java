@@ -1,7 +1,7 @@
 package hanabi;
 import java.util.*;
 
-public class Carte {
+public class Carte  implements Comparable<Carte> {
     private int numero;
     private String couleur;
 
@@ -20,7 +20,20 @@ public class Carte {
 
     @Override
     public String toString(){
-        return "Carte : " + this.numero + "|" + this.couleur;
+        String couleurStr = "\u001B[1;31m";
+        if(this.couleur.equals("vert")){
+            couleurStr = "\u001B[1;32m";
+        }
+        if(this.couleur.equals("bleu")){
+            couleurStr = "\u001B[1;34m";
+        }
+        if(this.couleur.equals("jaune")){
+            couleurStr = "\u001B[1;33m";
+        }
+        if(this.couleur.equals("blanc")){
+            couleurStr = "\u001B[1;37m";
+        }
+        return couleurStr+this.numero + "\u001B[0m";
     }
 
     public boolean isPlayable(Map<String, Deque<Carte>> pile){
@@ -34,5 +47,17 @@ public class Carte {
             }
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Carte other) {
+
+        int cmp = this.couleur.compareTo(other.getCouleur());
+
+        if (cmp != 0) {
+            return cmp;
+        }
+
+        return Integer.compare(this.numero, other.getNumero());
     }
 }

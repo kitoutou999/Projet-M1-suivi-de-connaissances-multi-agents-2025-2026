@@ -82,11 +82,13 @@ public class PolitiqueSimpleHanabi implements Politique {
                 List<Carte> mainAgent = mains.getValue();
                 for(Carte carte : mainAgent){
                     this.domaineDefault.remove(carte);
+                    int indexDomaine = 0;
                     for(Set domaine :listDomainesCartes){
                         boolean test = domaine.remove(carte);
                         if(test){
-                            System.out.println("Carte supprimée : " + carte);
+                            System.out.println("Carte " + carte+" supprimée du domaine "+indexDomaine);
                         }
+                        indexDomaine+=1;
                     }
                 }
             }
@@ -137,9 +139,15 @@ public class PolitiqueSimpleHanabi implements Politique {
 
             Random random = new Random();
             
-            System.out.println("Les DOMAINES des cartes :\n");
+            System.out.println("Les DOMAINES des cartessss de "+ agent +" :\n");
             for(int i =0;i<5;i++){
-                System.out.println("Domaine " + i + " : " + listDomainesCartes.get(i) + "\n");
+                List<Carte> listAffichage = new ArrayList<>();
+                Set<Carte> sc = listDomainesCartes.get(i);
+                for(Carte c : sc){
+                    listAffichage.add(c);
+                }
+                Collections.sort(listAffichage);
+                System.out.println("Domainee " + i + " : " + listAffichage + "\n");
             }
 
 

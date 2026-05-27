@@ -139,7 +139,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
             Random random = new Random();
             
-            System.out.println("Les DOMAINES des cartessss de "+ agent +" :\n");
+            System.out.println("Les DOMAINES des cartes de "+ agent +" :\n");
             for(int i =0;i<5;i++){
                 List<Carte> listAffichage = new ArrayList<>();
                 Set<Carte> sc = listDomainesCartes.get(i);
@@ -275,6 +275,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                         }
                     }
                 }
+                //je me défausse d'une carte aléatoire.
                 if(lastObs.getSizePioche()>1){
                     int posRandom = random.nextInt(actionDefausse.size());
                     listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));

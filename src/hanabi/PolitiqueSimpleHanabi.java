@@ -11,8 +11,10 @@ public class PolitiqueSimpleHanabi implements Politique {
     private Set<Carte> domaineDefault;
     private boolean premierTour;
     private List<Carte> carteBase;
+    private Random generateur;
     
-    public PolitiqueSimpleHanabi(List<Carte> carteBase){
+    public PolitiqueSimpleHanabi(List<Carte> carteBase,Random generateur){
+        this.generateur = generateur;
     	this.premierTour = true;
     	this.listDomainesCartes = new ArrayList<>();
     	this.domaineDefault = new HashSet<Carte>();
@@ -136,8 +138,6 @@ public class PolitiqueSimpleHanabi implements Politique {
                         Info incomplète (carte 1 mais connais pas la couleur etc...)
                     Sinon -> Action défausse (choix de carte random pour l'instant)
             */
-
-            Random random = new Random();
             
             System.out.println("Les DOMAINES des cartes de "+ agent +" :\n");
             for(int i =0;i<5;i++){
@@ -205,7 +205,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
                         if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                             for(Action a : actionInfo){ 
-                                if (random.nextBoolean() || allDomainesEmpty){ 
+                                if (generateur.nextBoolean() || allDomainesEmpty){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
@@ -221,7 +221,7 @@ public class PolitiqueSimpleHanabi implements Politique {
 
                         else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
                             for(Action a : actionInfo){ 
-                                if (random.nextBoolean()){ 
+                                if (generateur.nextBoolean()){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
@@ -261,7 +261,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                         if(!pile.isEmpty() && carte.getNumero() >= (pile.peek()).getNumero() + 1){
                             for(Action a : actionInfo){
                                 //Enlever l'aléatoire et utiliser les croyances.
-                                if(random.nextBoolean()){ 
+                                if(generateur.nextBoolean()){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
@@ -277,12 +277,12 @@ public class PolitiqueSimpleHanabi implements Politique {
                 }
                 //je me défausse d'une carte aléatoire.
                 if(lastObs.getSizePioche()>1){
-                    int posRandom = random.nextInt(actionDefausse.size());
+                    int posRandom = generateur.nextInt(actionDefausse.size());
                     listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));
                     return actionDefausse.get(posRandom);  //Action défausse (choix de carte random pour l'instant)
                 }
             }
-            int posRandom = random.nextInt(actionDefausse.size());
+            int posRandom = generateur.nextInt(actionDefausse.size());
             listDomainesCartes.set(posRandom, new HashSet<Carte>(this.domaineDefault));
             return actionDefausse.get(posRandom);  //Action défausse (choix de carte random pour l'instant)
             

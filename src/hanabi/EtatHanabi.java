@@ -63,7 +63,7 @@ public class EtatHanabi implements Etat {
             }
             res += "\n";
         }
-        res += "C'est l'agent " + agentQuiJoue + " qui joue\n";
+        res += "C'est l'agent " + agentQuiJoue + " qui jouera dans le prochain tour\n";
         res += "\u001B[1;4mLe jeu : \u001B[0m" + jeu + "\n";
         res += "Score : " + this.getScore() + "\n";
         res += "Le nombre d'erreur est de " + nbErreur + "\n";

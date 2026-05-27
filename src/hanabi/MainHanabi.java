@@ -5,6 +5,22 @@ import core.*;
 public class MainHanabi{
     public static void main(String[] args) {
 
+        Random generateur;
+
+        if (args.length > 0) {
+            try {
+                long seed = Long.parseLong(args[0]);
+                generateur = new Random(seed);
+                
+            } catch (NumberFormatException e) {
+                generateur = new Random(); 
+            }
+        } else {
+            generateur = new Random();
+        }
+
+
+
 
         //Créer un "Hanabi" (la boite de jeu)
         List<Integer> listNumero = new ArrayList<>(List.of(3,2,2,2,1)); // Vrai valeur pour Hanabi -> 3,2,2,2,1
@@ -17,15 +33,15 @@ public class MainHanabi{
             nombreCarte.put(c,listNumero);
             valeurMax.put(c,listNumero.size());
         }
-        Hanabi hanabi = new Hanabi(nombreCarte,3,valeurMax);
+        Hanabi hanabi = new Hanabi(nombreCarte,3,valeurMax,generateur);
         
         List<Carte> carteBase = new ArrayList<>(hanabi.getPioche());
 
         //System.out.println(hanabi.getPioche() + "\n");
 
         PolitiqueRandom politiqueRandom = new PolitiqueRandom();
-        PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase);
-        PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase);
+        PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase,generateur);
+        PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase,generateur);
 
         //Créer les agents
         

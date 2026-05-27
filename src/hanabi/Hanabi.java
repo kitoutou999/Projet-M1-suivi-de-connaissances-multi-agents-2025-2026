@@ -6,9 +6,11 @@ public class Hanabi {
     private Map<String,List<Integer>> nombreCarte = new HashMap<>();
     private Map<String,Integer> valeurMax = new HashMap<>();
     private int nbErreurMax;
+    private Random generateur;
 
-    public Hanabi(Map<String,List<Integer>> nombreCarte,int nbErreurMax,Map<String,Integer> valeurMax){
+    public Hanabi(Map<String,List<Integer>> nombreCarte,int nbErreurMax,Map<String,Integer> valeurMax,Random generateur){
         this.nombreCarte = nombreCarte;
+        this.generateur = generateur;
         this.pioche = creerPioche();
         this.nbErreurMax = nbErreurMax; 
         this.valeurMax = valeurMax;
@@ -33,7 +35,7 @@ public class Hanabi {
                 numero++;
             }
         }
-        Collections.shuffle(piocheTempo);
+        Collections.shuffle(piocheTempo,generateur);
         return piocheTempo;
     }
 
@@ -61,6 +63,5 @@ public class Hanabi {
     public Map<String,List<Integer>> getNombreCarte(){
         return nombreCarte;
     } 
-
     
 }

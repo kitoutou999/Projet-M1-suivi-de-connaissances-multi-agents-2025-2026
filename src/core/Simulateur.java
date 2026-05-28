@@ -7,19 +7,27 @@ public class Simulateur {
     private final Jeu jeu;
     private final List<Agent<?>> agents;
 
+    private boolean verbose = true;
+
     public Simulateur(Jeu jeu, List<Agent<?>> agents) {
         this.jeu = jeu;
         this.agents = agents;
     }
 
-    public void run(int maxStep) {
+    public Simulateur(Jeu jeu, List<Agent<?>> agents, boolean verbose) {
+        this.jeu = jeu;
+        this.agents = agents;
+        this.verbose = verbose;
+    }
+
+    public Etat run(int maxStep) {
         Etat etatCourant = jeu.getInitialState();
         int step = 0;
 
-        System.out.println("État initial : " + etatCourant + "\n");
+        if (verbose) System.out.println("État initial : " + etatCourant + "\n");
 
         while (!jeu.isFinal(etatCourant) && step < maxStep) {
-            System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m");
+            if (verbose) System.out.println("\033[4m\033[1;34mTour " + step + "\033[0m");
             step++;
             ActionJointe actionJointe = new ActionJointe();
 
@@ -42,12 +50,15 @@ public class Simulateur {
                     agent.getBeliefState().mettreAJour(agent, obs, actionJointe.getAction(agent), step);
             }
 
-            String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");
-            System.out.println("  " + ligneAction);
-            System.out.println("  \033[1mEtat\033[0m : " + etatCourant);
-            System.out.println();
+            if (verbose) {
+                String ligneAction = actionJointe.toString().replace("Rester sur place", "\033[1;31mRester sur place\033[0m");
+                System.out.println("  " + ligneAction);
+                System.out.println("  \033[1mEtat\033[0m : " + etatCourant);
+                System.out.println();
+            }
         }
 
-        System.out.println("Simulation terminée.");
+        if (verbose) System.out.println("Simulation terminée.");
+        return etatCourant;
     }
 }

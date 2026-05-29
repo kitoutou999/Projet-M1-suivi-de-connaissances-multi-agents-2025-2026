@@ -6,14 +6,20 @@ import core.*;
 
 
 public class PolitiqueSimpleHanabi implements Politique {
-    
+
     private List<Set> listDomainesCartes;
     private Set<Carte> domaineDefault;
     private boolean premierTour;
     private List<Carte> carteBase;
     private Random generateur;
-    
-    public PolitiqueSimpleHanabi(List<Carte> carteBase,Random generateur){
+    private boolean verbose;
+
+    public PolitiqueSimpleHanabi(List<Carte> carteBase, Random generateur) {
+        this(carteBase, generateur, false);
+    }
+
+    public PolitiqueSimpleHanabi(List<Carte> carteBase, Random generateur, boolean verbose) {
+        this.verbose = verbose;
         this.generateur = generateur;
     	this.premierTour = true;
     	this.listDomainesCartes = new ArrayList<>();
@@ -88,7 +94,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                     for(Set domaine :listDomainesCartes){
                         boolean test = domaine.remove(carte);
                         if(test){
-                            System.out.println("Carte " + carte+" supprimée du domaine "+indexDomaine);
+                            if(verbose) System.out.println("Carte " + carte+" supprimée du domaine "+indexDomaine);
                         }
                         indexDomaine+=1;
                     }
@@ -139,7 +145,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                     Sinon -> Action défausse (choix de carte random pour l'instant)
             */
             
-            System.out.println("Les DOMAINES des cartes de "+ agent +" :\n");
+            if(verbose) System.out.println("Les DOMAINES des cartes de "+ agent +" :\n");
             for(int i =0;i<5;i++){
                 List<Carte> listAffichage = new ArrayList<>();
                 Set<Carte> sc = listDomainesCartes.get(i);
@@ -147,7 +153,7 @@ public class PolitiqueSimpleHanabi implements Politique {
                     listAffichage.add(c);
                 }
                 Collections.sort(listAffichage);
-                System.out.println("Domainee " + i + " : " + listAffichage + "\n");
+                if(verbose) System.out.println("Domainee " + i + " : " + listAffichage + "\n");
             }
 
 
@@ -324,7 +330,7 @@ public class PolitiqueSimpleHanabi implements Politique {
      * Pour une carte d'un agent on regarde quel indice va réduire un maximum son domaine et on renvoie 0 ou 1 en fonction du plus intéressant.
      */
     public int choixIndice(Agent agent,Agent agentSelf,Historique historique,Carte carte,Map<Agent<?>, List<Carte>>  mainAutre,int idCarte){
-        System.out.println("CHOIX INDICE ------------------------------------------------------------------");
+        if(verbose) System.out.println("CHOIX INDICE ------------------------------------------------------------------");
         List<Carte> domaineCarte = new ArrayList<>(this.carteBase);//domaine par défaut qu'on utilise pour construire des domaines
         List<Map.Entry<Action,Observation>> listeHisto = historique.getListe();
         Set<Action> setOfIndice = new HashSet<>();//tout les indices qui portent sur la carte.
@@ -332,33 +338,25 @@ public class PolitiqueSimpleHanabi implements Politique {
         //Observation lastObss = historique.getDerniere().getValue();
         ObservationHanabi lastObs = (ObservationHanabi) historique.getDerniere().getValue();
 
-        //On stop si on rencontre une action qui implique l'apparition de la carte en paramètre.
+
         for(Map.Entry<Action, Observation> entry : listeHisto){
-            Action action = entry.getKey();
-            ObservationHanabi observation = (ObservationHanabi)entry.getValue();
-            if(action instanceof ActionDefausse){
-                ActionDefausse act = (ActionDefausse)action;
-                if(act.getPosCarte() == idCarte && agent.equals(observation.getAgent())){
-                    continue;
-                }
+            ObservationHanabi obs = (ObservationHanabi) entry.getValue();
+            Action actionCible = obs.getActions().getActions().get(agent);
+            if(actionCible instanceof ActionDefausse act && act.getPosCarte() == idCarte){
+                setOfIndice.clear();
+                continue;
             }
-            if(action instanceof ActionPoser){
-                ActionPoser actp = (ActionPoser)action;
-                if(actp.getPosCarte() == idCarte && agent.equals(observation.getAgent())){
-                    continue;
-                }
+            if(actionCible instanceof ActionPoser act && act.getPosCarte() == idCarte){
+                setOfIndice.clear();
+                continue;
             }
-            if(action instanceof ActionIndiquerCouleur){
-                ActionIndiquerCouleur acti = (ActionIndiquerCouleur) action;
-                if(acti.getAgentCible().equals(agent) && acti.getCouleur().equals(carte.getCouleur())){
+            for(Action action : obs.getActions().getActions().values()){
+                if(action instanceof ActionIndiquerCouleur acti && acti.getAgentCible().equals(agent) && acti.getCouleur().equals(carte.getCouleur())){
                     setOfIndice.add(action);
-                }   
-            }
-            if(action instanceof ActionIndiquerValeur){
-                ActionIndiquerValeur actii = (ActionIndiquerValeur) action;
-                if(actii.getAgentCible().equals(agent) && actii.getNumero() == carte.getNumero()){
+                }
+                if(action instanceof ActionIndiquerValeur actii && actii.getAgentCible().equals(agent) && actii.getNumero() == carte.getNumero()){
                     setOfIndice.add(action);
-                } 
+                }
             }
         }
         //On stock les cartes des mains des autres agents.
@@ -389,10 +387,10 @@ public class PolitiqueSimpleHanabi implements Politique {
                 listCarteConnues.add(c);
             }
         }
-        System.out.println("cartes connues");
-        System.out.println(listCarteConnues);
-        System.out.println("indices qui portent sur la carte : "+carte);
-        System.out.println(setOfIndice);
+        if(verbose) System.out.println("cartes connues");
+        if(verbose) System.out.println(listCarteConnues);
+        if(verbose) System.out.println("indices qui portent sur la carte : "+carte);
+        if(verbose) System.out.println(setOfIndice);
 
         //On supprimer du domaine de défaut les cartes qui sont connues.
         for(Carte c : listCarteConnues){
@@ -440,19 +438,19 @@ public class PolitiqueSimpleHanabi implements Politique {
         //on regarde lequel a subi la plus grosse reduction.
         int diffNum = domaineCarte.size() - domaineNum.size();
         int diffCouleur = domaineCarte.size() - domaineCouleur.size();
-        System.out.println("Domaine de la carte,couleur,numero");
-        System.out.println(domaineCarte);
-        System.out.println(domaineCouleur);
-        System.out.println(domaineNum);
+        if(verbose) System.out.println("Domaine de la carte,couleur,numero");
+        if(verbose) System.out.println(domaineCarte);
+        if(verbose) System.out.println(domaineCouleur);
+        if(verbose) System.out.println(domaineNum);
         if(domaineCarte.equals(domaineNum) && domaineCarte.equals(domaineCouleur)){
-            System.out.println("pas de reduction de domaine");
+            if(verbose) System.out.println("pas de reduction de domaine");
             return 2;
         }
         if(diffNum > diffCouleur){
-            System.out.println("on donne indice numéro");
+            if(verbose) System.out.println("on donne indice numéro");
             return 0;
         }else{
-            System.out.println("on donne indice couleur");
+            if(verbose) System.out.println("on donne indice couleur");
             return 1;
         }
         //0 quand indice sur le numéro reduit plus le domaine, sinon 1 pour couleur

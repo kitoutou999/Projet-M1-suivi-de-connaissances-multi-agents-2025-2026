@@ -377,13 +377,13 @@ public class PolitiqueSimpleHanabi implements Politique {
         }
         //On stock les cartes de la défausse.
         for(Map.Entry<Action, Observation> entry : listeHisto){
-            Action action = entry.getKey();
-            ObservationHanabi observation = (ObservationHanabi)entry.getValue();
-            /* // partie sur la défausse.
-            if(action instanceof ActionDefausse){
-                ActionDefausse act = (ActionDefausse)action;
-                listCarteConnues.add();
-            }*/
+            ObservationHanabi obs = (ObservationHanabi) entry.getValue();
+            if(obs.getAgent().equals(agent)){
+                List<Carte> defausse = obs.getDefausse();
+                for(Carte c : defausse){
+                    listCarteConnues.add(c);
+                }
+            }
         }
         //On stock les cartes de la piles.
         Map<String, Deque<Carte>> etatPiles = lastObs.getEtatPiles();
@@ -397,6 +397,8 @@ public class PolitiqueSimpleHanabi implements Politique {
         if(verbose) System.out.println(listCarteConnues);
         if(verbose) System.out.println("indices qui portent sur la carte : "+carte);
         if(verbose) System.out.println(setOfIndice);
+        if(verbose) System.out.println("Defausse");
+        if(verbose) System.out.println(lastObs.getDefausse());
 
         //On supprimer du domaine de défaut les cartes qui sont connues.
         for(Carte c : listCarteConnues){

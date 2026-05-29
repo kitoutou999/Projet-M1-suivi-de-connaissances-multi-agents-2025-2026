@@ -13,7 +13,7 @@ public class JeuHanabi extends Jeu {
         this.hanabi = hanabi;
         this.agents = agents;
         this.boucleJeu = 0;
-        this.etatInitial = new EtatHanabi(mainsAgents, creerJeu(), 0, agents.get(boucleJeu),hanabi.getPioche().size());
+        this.etatInitial = new EtatHanabi(mainsAgents, creerJeu(), 0, agents.get(boucleJeu),hanabi.getPioche().size(),hanabi.getDefausse());
     }
 
 
@@ -75,6 +75,8 @@ public class JeuHanabi extends Jeu {
 
             if (action instanceof ActionDefausse ad) { //Si défausse
                 int posCarte = ad.posCarte();
+                Carte carte = (newMainsAgents.get(agent)).get(posCarte);
+                hanabi.addToDefausse(carte);
                 if (!hanabi.getPioche().isEmpty()) {
                     (newMainsAgents.get(agent)).set(posCarte, hanabi.retireCarte());
                 } else {
@@ -123,7 +125,7 @@ public class JeuHanabi extends Jeu {
             boucleJeu = 0;
         }
         
-        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu),this.hanabi.getPioche().size());
+        return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu),this.hanabi.getPioche().size(),hanabi.getDefausse());
     }
 
     @Override

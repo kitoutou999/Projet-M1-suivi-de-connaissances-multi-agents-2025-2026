@@ -7,6 +7,7 @@ public class Hanabi {
     private Map<String,Integer> valeurMax = new HashMap<>();
     private int nbErreurMax;
     private Random generateur;
+    private List<Carte> defausse;
 
     public Hanabi(Map<String,List<Integer>> nombreCarte,int nbErreurMax,Map<String,Integer> valeurMax,Random generateur){
         this.nombreCarte = nombreCarte;
@@ -14,6 +15,7 @@ public class Hanabi {
         this.pioche = creerPioche();
         this.nbErreurMax = nbErreurMax; 
         this.valeurMax = valeurMax;
+        this.defausse = new ArrayList<>();
     }
 
     //Créer une pioche avec toute les cartes mélangées
@@ -63,5 +65,13 @@ public class Hanabi {
     public Map<String,List<Integer>> getNombreCarte(){
         return nombreCarte;
     } 
+
+    public List<Carte> getDefausse(){
+        return this.defausse;
+    }
+
+    public void addToDefausse(Carte carte){
+        this.defausse.add(carte);
+    }
     
 }

@@ -8,13 +8,15 @@ public class EtatHanabi implements Etat {
     private int nbErreur;
     private Agent<?> agentQuiJoue;
     private int sizePioche;
+    private List<Carte> defausse;
 
-    public EtatHanabi(Map<Agent<?>, List<Carte>> mainsAgents, Map<String, Deque<Carte>> jeu, int nbErreur, Agent<?> agentQuiJoue,int sizePioche){
+    public EtatHanabi(Map<Agent<?>, List<Carte>> mainsAgents, Map<String, Deque<Carte>> jeu, int nbErreur, Agent<?> agentQuiJoue,int sizePioche,List<Carte> defausse){
         this.mainsAgents = new HashMap<>(mainsAgents);
         this.jeu = new HashMap<>(jeu);
         this.nbErreur = nbErreur;
         this.agentQuiJoue = agentQuiJoue;
         this.sizePioche = sizePioche;
+        this.defausse = defausse;
     }
 
     public Map<Agent<?>, List<Carte>> getMainsAgents(){
@@ -51,6 +53,10 @@ public class EtatHanabi implements Etat {
         return this.sizePioche;
     }
 
+    public List<Carte> getDefausse(){
+        return this.defausse;
+    }
+    
     @Override
     public String toString() {
         String res = "Etat Hanabi :\n";

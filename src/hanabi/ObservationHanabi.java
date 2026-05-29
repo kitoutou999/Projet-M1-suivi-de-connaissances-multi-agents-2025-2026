@@ -55,6 +55,10 @@ public class ObservationHanabi extends Observation {
         return this.sizePioche;
     }
 
+    public Agent getAgent(){
+        return this.agent;
+    }
+
     @Override
     public String toString() {
         String chaine = "Observations de " + this.agent + " :\n";

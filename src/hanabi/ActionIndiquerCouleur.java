@@ -8,4 +8,12 @@ public record ActionIndiquerCouleur(Agent agentCible,String couleur,EtatHanabi e
         return "Action indique couleur des cartes " + couleur;
     }
 
+    public Agent getAgentCible(){
+        return agentCible;
+    }
+
+    public String getCouleur(){
+        return couleur;
+    }
+
 }

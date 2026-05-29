@@ -40,8 +40,8 @@ public class MainHanabi{
         //System.out.println(hanabi.getPioche() + "\n");
 
         PolitiqueRandom politiqueRandom = new PolitiqueRandom();
-        PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase,generateur);
-        PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase,generateur);
+        PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase,generateur,true);
+        PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase,generateur,true);
 
         //Créer les agents
         

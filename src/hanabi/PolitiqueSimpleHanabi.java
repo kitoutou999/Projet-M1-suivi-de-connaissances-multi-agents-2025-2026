@@ -62,10 +62,13 @@ public class PolitiqueSimpleHanabi implements Politique {
                         List<Carte> mainAgent = etatIndique.getMainAgent(agent);
 
                         for(int i = 0;i < 5;i++){
+                            Set<Carte> domaine = listDomainesCartes.get(i);
                             if(mainAgent.get(i).getCouleur().equals(daic.couleur())){
-                                Set<Carte> domaine = listDomainesCartes.get(i);
                                 domaine.removeIf(carte -> !carte.getCouleur().equals(daic.couleur()));
                             }
+                            else{
+                                domaine.removeIf(carte -> carte.getCouleur().equals(daic.couleur()));
+                            } 
                         }
 
                         
@@ -75,9 +78,12 @@ public class PolitiqueSimpleHanabi implements Politique {
                         List<Carte> mainAgent = etatIndique.getMainAgent(agent);
 
                         for(int i = 0;i < 5;i++){
+                            Set<Carte> domaine = listDomainesCartes.get(i);
                             if(mainAgent.get(i).getNumero() == daiv.valeur()){
-                                Set<Carte> domaine = listDomainesCartes.get(i);
                                 domaine.removeIf(carte -> carte.getNumero() != daiv.valeur());
+                            }
+                            else{
+                                domaine.removeIf(carte -> carte.getNumero() == daiv.valeur());
                             }
                         }
                     }

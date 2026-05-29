@@ -8,6 +8,9 @@ public class Simulateur {
     private final List<Agent<?>> agents;
 
     private boolean verbose = true;
+    private int nbTours = 0;
+
+    public int getNbTours() { return nbTours; }
 
     public Simulateur(Jeu jeu, List<Agent<?>> agents) {
         this.jeu = jeu;
@@ -59,6 +62,7 @@ public class Simulateur {
         }
 
         if (verbose) System.out.println("Simulation terminée.");
+        nbTours = step;
         return etatCourant;
     }
 }

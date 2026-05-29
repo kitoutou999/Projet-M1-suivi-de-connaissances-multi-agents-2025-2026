@@ -7,4 +7,8 @@ public record ActionPoser(int posCarte) implements ActionHanabi{
         return "Action poser la carte à la position " + posCarte;
     }
 
+    public int getPosCarte(){
+        return posCarte;
+    }
+
 }

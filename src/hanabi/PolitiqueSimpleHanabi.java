@@ -200,17 +200,18 @@ public class PolitiqueSimpleHanabi implements Politique {
                 for(Map.Entry<Agent<?>,List<Carte>> entry : lastMains.entrySet()){
                     Agent agentCible = entry.getKey();
                     List<Carte> cartes = entry.getValue();
+                    int i = 0;
                     for(Carte carte: cartes){
                         Deque<Carte> pile = lastJeu.get(carte.getCouleur());
-
+                        int choixIndiceResult = this.choixIndice(agentCible,agent,historique,carte,agentHanabi.getAutresMains(),i);
                         if(pile.isEmpty() && carte.getNumero() == 1){ //Pour pouvoir Jouer les carte 1
                             for(Action a : actionInfo){ 
-                                if (generateur.nextBoolean() || allDomainesEmpty){ 
+                                if (choixIndiceResult == 0 || allDomainesEmpty){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
                                 }
-                                else{ 
+                                if (choixIndiceResult == 1 || allDomainesEmpty){ 
                                     if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
                                         return aic;
                                     }
@@ -221,18 +222,19 @@ public class PolitiqueSimpleHanabi implements Politique {
 
                         else if (!pile.isEmpty() && carte.getNumero() == (pile.peek()).getNumero() + 1){ //Pour pouvoir jouer les autres cartes que 1
                             for(Action a : actionInfo){ 
-                                if (generateur.nextBoolean()){ 
+                                if (choixIndiceResult == 0){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
                                 }
-                                else{ 
+                                if(choixIndiceResult == 1){ 
                                     if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
                                         return aic;
                                     }
                                 }
                             }
                         }
+                        i++;
                     }
 
                 }
@@ -256,17 +258,19 @@ public class PolitiqueSimpleHanabi implements Politique {
                 for(Map.Entry<Agent<?>,List<Carte>> entry : lastMains.entrySet()){
                     Agent agentCible = entry.getKey();
                     List<Carte> cartes = entry.getValue();
+                    int i = 0;
                     for(Carte carte: cartes){
                         Deque<Carte> pile = lastJeu.get(carte.getCouleur());
+                        int choixIndiceResult = this.choixIndice(agentCible,agent,historique,carte,agentHanabi.getAutresMains(),i);
                         if(!pile.isEmpty() && carte.getNumero() >= (pile.peek()).getNumero() + 1){
                             for(Action a : actionInfo){
                                 //Enlever l'aléatoire et utiliser les croyances.
-                                if(generateur.nextBoolean()){ 
+                                if(choixIndiceResult == 0){ 
                                     if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
                                         return aiv;
                                     }
                                 }
-                                else{ 
+                                if(choixIndiceResult == 1){ 
                                     if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
                                         return aic;
                                     }
@@ -274,6 +278,33 @@ public class PolitiqueSimpleHanabi implements Politique {
                             }
                         }
                     }
+                    i++;
+                }
+                //Je donne un indice sur une carte injouable
+                for(Map.Entry<Agent<?>,List<Carte>> entry : lastMains.entrySet()){
+                    Agent agentCible = entry.getKey();
+                    List<Carte> cartes = entry.getValue();
+                    int i = 0;
+                    for(Carte carte: cartes){
+                        Deque<Carte> pile = lastJeu.get(carte.getCouleur());
+                        int choixIndiceResult = this.choixIndice(agentCible,agent,historique,carte,agentHanabi.getAutresMains(),i);
+                        if(!pile.isEmpty() && carte.getNumero() <= (pile.peek()).getNumero()){
+                            for(Action a : actionInfo){
+                                //Enlever l'aléatoire et utiliser les croyances.
+                                if(choixIndiceResult == 0){ 
+                                    if(a instanceof ActionIndiquerValeur aiv && aiv.valeur() == carte.getNumero() && aiv.agentCible() == agentCible){ 
+                                        return aiv;
+                                    }
+                                }
+                                if(choixIndiceResult == 1){ 
+                                    if(a instanceof ActionIndiquerCouleur aic && aic.couleur() == carte.getCouleur() && aic.agentCible() == agentCible){ 
+                                        return aic;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    i++;
                 }
                 //je me défausse d'une carte aléatoire.
                 if(lastObs.getSizePioche()>1){
@@ -288,5 +319,143 @@ public class PolitiqueSimpleHanabi implements Politique {
             
         }
         return null;
+    }
+    /**
+     * Pour une carte d'un agent on regarde quel indice va réduire un maximum son domaine et on renvoie 0 ou 1 en fonction du plus intéressant.
+     */
+    public int choixIndice(Agent agent,Agent agentSelf,Historique historique,Carte carte,Map<Agent<?>, List<Carte>>  mainAutre,int idCarte){
+        System.out.println("CHOIX INDICE ------------------------------------------------------------------");
+        List<Carte> domaineCarte = new ArrayList<>(this.carteBase);//domaine par défaut qu'on utilise pour construire des domaines
+        List<Map.Entry<Action,Observation>> listeHisto = historique.getListe();
+        Set<Action> setOfIndice = new HashSet<>();//tout les indices qui portent sur la carte.
+        List<Carte> listCarteConnues = new ArrayList<>();//Toutes les cartes connues. Défausse,piles,mains.
+        //Observation lastObss = historique.getDerniere().getValue();
+        ObservationHanabi lastObs = (ObservationHanabi) historique.getDerniere().getValue();
+
+        //On stop si on rencontre une action qui implique l'apparition de la carte en paramètre.
+        for(Map.Entry<Action, Observation> entry : listeHisto){
+            Action action = entry.getKey();
+            ObservationHanabi observation = (ObservationHanabi)entry.getValue();
+            if(action instanceof ActionDefausse){
+                ActionDefausse act = (ActionDefausse)action;
+                if(act.getPosCarte() == idCarte && agent.equals(observation.getAgent())){
+                    continue;
+                }
+            }
+            if(action instanceof ActionPoser){
+                ActionPoser actp = (ActionPoser)action;
+                if(actp.getPosCarte() == idCarte && agent.equals(observation.getAgent())){
+                    continue;
+                }
+            }
+            if(action instanceof ActionIndiquerCouleur){
+                ActionIndiquerCouleur acti = (ActionIndiquerCouleur) action;
+                if(acti.getAgentCible().equals(agent) && acti.getCouleur().equals(carte.getCouleur())){
+                    setOfIndice.add(action);
+                }   
+            }
+            if(action instanceof ActionIndiquerValeur){
+                ActionIndiquerValeur actii = (ActionIndiquerValeur) action;
+                if(actii.getAgentCible().equals(agent) && actii.getNumero() == carte.getNumero()){
+                    setOfIndice.add(action);
+                } 
+            }
+        }
+        //On stock les cartes des mains des autres agents.
+        for(Map.Entry<Agent<?>,List<Carte>> entry : mainAutre.entrySet()){
+            AgentHanabi agenth = (AgentHanabi)entry.getKey();
+            List<Carte> main = entry.getValue();
+            if(!agenth.equals(agent) && !agenth.equals(agentSelf)){
+                for(Carte c : main){
+                    listCarteConnues.add(c);
+                }
+            }
+        }
+        //On stock les cartes de la défausse.
+        for(Map.Entry<Action, Observation> entry : listeHisto){
+            Action action = entry.getKey();
+            ObservationHanabi observation = (ObservationHanabi)entry.getValue();
+            /* // partie sur la défausse.
+            if(action instanceof ActionDefausse){
+                ActionDefausse act = (ActionDefausse)action;
+                listCarteConnues.add();
+            }*/
+        }
+        //On stock les cartes de la piles.
+        Map<String, Deque<Carte>> etatPiles = lastObs.getEtatPiles();
+        for(Map.Entry<String, Deque<Carte>> entry : etatPiles.entrySet()){
+            Deque<Carte> deque = entry.getValue();
+            for(Carte c : deque){
+                listCarteConnues.add(c);
+            }
+        }
+        System.out.println("cartes connues");
+        System.out.println(listCarteConnues);
+        System.out.println("indices qui portent sur la carte : "+carte);
+        System.out.println(setOfIndice);
+
+        //On supprimer du domaine de défaut les cartes qui sont connues.
+        for(Carte c : listCarteConnues){
+            domaineCarte.remove(c);
+        }
+
+        for(Action act : setOfIndice){
+            if(act instanceof ActionIndiquerCouleur){
+                Iterator<Carte> iterator1 = domaineCarte.iterator();
+                while(iterator1.hasNext()){
+                    Carte c = iterator1.next();
+                    if(c.getCouleur() != carte.getCouleur()){
+                        iterator1.remove();
+                    }
+                }
+
+            }
+            if(act instanceof ActionIndiquerValeur){
+                Iterator<Carte> iterator2 = domaineCarte.iterator();
+                while(iterator2.hasNext()){
+                    Carte c = iterator2.next();
+                    if(c.getNumero() != carte.getNumero()){
+                        iterator2.remove();
+                    }
+                }
+            }
+        }
+        List<Carte> domaineNum = new ArrayList<>(domaineCarte);
+        List<Carte> domaineCouleur = new ArrayList<>(domaineCarte);
+        //on applique au deux domaines respectivement un indice sur le numéro et un indice sur la couleur.
+        Iterator<Carte> iterator = domaineNum.iterator();
+        while(iterator.hasNext()){
+            Carte c = iterator.next();
+            if(c.getNumero() != carte.getNumero()){
+                iterator.remove();
+            }
+        }
+        iterator = domaineCouleur.iterator();
+        while(iterator.hasNext()){
+            Carte c = iterator.next();
+            if(c.getCouleur() != carte.getCouleur()){
+                iterator.remove();
+            }
+        }
+        //on regarde lequel a subi la plus grosse reduction.
+        int diffNum = domaineCarte.size() - domaineNum.size();
+        int diffCouleur = domaineCarte.size() - domaineCouleur.size();
+        System.out.println("Domaine de la carte,couleur,numero");
+        System.out.println(domaineCarte);
+        System.out.println(domaineCouleur);
+        System.out.println(domaineNum);
+        if(domaineCarte.equals(domaineNum) && domaineCarte.equals(domaineCouleur)){
+            System.out.println("pas de reduction de domaine");
+            return 2;
+        }
+        if(diffNum > diffCouleur){
+            System.out.println("on donne indice numéro");
+            return 0;
+        }else{
+            System.out.println("on donne indice couleur");
+            return 1;
+        }
+        //0 quand indice sur le numéro reduit plus le domaine, sinon 1 pour couleur
+        
     }
 }

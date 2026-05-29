@@ -8,4 +8,8 @@ public record ActionDefausse(int posCarte) implements ActionHanabi{
         return "Action défausser la carte à la position " + posCarte;
     }
 
+    public int getPosCarte(){
+        return posCarte;
+    }
+
 }

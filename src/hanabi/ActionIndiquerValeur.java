@@ -8,4 +8,12 @@ public record ActionIndiquerValeur(Agent agentCible,int valeur,EtatHanabi etat) 
         return "Action indique valeur des cartes " + String.valueOf(valeur);
     }
 
+    public Agent getAgentCible(){
+        return agentCible;
+    }
+
+    public int getNumero(){
+        return valeur;
+    }
+
 }

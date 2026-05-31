@@ -3,11 +3,8 @@ package ville;
 import core.*;
 import java.util.*;
 /**
- * Message pour une route qui est fermée ou ouverte selon des horaires(de step1 à step2).
- * Si il nous manque une information que ça soit de début ou de fin alors cette information est à -1.
- * @param step1 début de l'horaire.
- * @param step2 fin de l'horaire.
- * @param ouvert Si à true alors la route est ouverte de step1 à step2 sinon elle est fermée de step1 à step2.
+ * Message pour une route ouverte ou fermée selon des horaires (de step1 à step2).
+ * Si une borne est inconnue, elle vaut -1.
  */
 public class MessageRouteHoraire implements Message {
     private int step1;

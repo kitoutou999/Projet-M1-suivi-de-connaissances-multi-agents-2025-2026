@@ -3,6 +3,11 @@ package ville;
 import core.*;
 import java.util.*;
 
+/**
+ * Politique du plus court chemin (BFS) vers le lieu de rendez-vous.
+ * Gère également la propagation de messages sur les routes fermées
+ * et le raisonnement de second ordre pour décider si un message est utile aux autres agents.
+ */
 public class PolitiquePCC implements Politique{
 
 	private LinkedList<String> chemin;

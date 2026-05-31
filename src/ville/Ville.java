@@ -2,6 +2,10 @@ package ville;
 
 import java.util.*;
 
+/**
+ * Graphe non orienté représentant la carte de la ville.
+ * Stocke les adjacences entre lieux et l'état ouvert/fermé de chacun.
+ */
 public class Ville {
     private final Map<String, List<String>> adjacences = new HashMap<>();
     private final Set<String> lieuxFermes = new HashSet<>();
@@ -32,6 +36,7 @@ public class Ville {
     }
 
 
+    /** Génère une ville composée de deux arbres binaires reliés par des ponts entre leurs feuilles. */
     public static Ville genererDeuxArbres(int profondeur, int nbPonts) {
         Ville ville = new Ville();
         int nbNoeuds = (int) Math.pow(2, profondeur) - 1;

@@ -5,6 +5,10 @@ import core.Etat;
 import core.Message;
 import java.util.*;
 
+/**
+ * Représente un état du jeu de rendez-vous : la position de chaque agent,
+ * les messages déposés sur chaque lieu, et les routes fermées connues de chaque agent.
+ */
 public class EtatRDV implements Etat {
     private final Map<Agent<?>, String> positions;
     private final Map<String, List<Message>> messages;

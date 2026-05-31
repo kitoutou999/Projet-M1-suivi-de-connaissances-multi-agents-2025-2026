@@ -4,6 +4,10 @@ import core.*;
 import core.Message;
 import java.util.*;
 
+/**
+ * Implémentation du jeu de rendez-vous dans une ville.
+ * La partie est gagnée quand tous les agents se trouvent simultanément au lieu de rendez-vous.
+ */
 public class JeuRDV extends Jeu {
 
     private final Ville ville;

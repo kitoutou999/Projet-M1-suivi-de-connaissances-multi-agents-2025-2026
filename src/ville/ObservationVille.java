@@ -3,6 +3,10 @@ package ville;
 import core.*;
 import java.util.*;
 
+/**
+ * Observation reçue par un agent à chaque tour dans le scénario Ville.
+ * Contient la liste des messages perçus : agents présents, routes fermées, agents bloqués.
+ */
 public class ObservationVille extends Observation{
     private List<Message> message = new ArrayList<>();
 
@@ -11,6 +15,7 @@ public class ObservationVille extends Observation{
         this.name = agent.toString() + message.toString();
     }
 
+    /** Crée l'observation réelle d'un agent et met à jour sa position courante. */
     public static ObservationVille creer(Agent<?> agent, Etat nextState, ActionJointe actions, int step, int mode) {
         EtatRDV nextStateRDV = (EtatRDV) nextState;
         AgentVille agentV = (AgentVille) agent;
@@ -41,6 +46,7 @@ public class ObservationVille extends Observation{
         for (Message m : etat.getMessages(agentPos)) message.add(m);
     }
 
+    /** Simule l'observation pour une transition hypothétique, utilisée par le BeliefStateFilter. */
     public static ObservationVille simuler(Agent<?> agent, EtatRDV etatHyp, ActionJointe actionsHyp, String positionAvant, int step, int mode) {
         return new ObservationVille(agent, etatHyp, actionsHyp, positionAvant, step, mode);
     }

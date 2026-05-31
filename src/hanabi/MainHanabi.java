@@ -5,6 +5,7 @@ import core.*;
 public class MainHanabi{
     public static void main(String[] args) {
 
+        //Créer un générateur aléatoire en fonction de rien ou d'une seed donnée si il y en a une
         Random generateur;
 
         if (args.length > 0) {
@@ -18,8 +19,6 @@ public class MainHanabi{
         } else {
             generateur = new Random();
         }
-
-
 
 
         //Créer un "Hanabi" (la boite de jeu)
@@ -37,14 +36,12 @@ public class MainHanabi{
         
         List<Carte> carteBase = new ArrayList<>(hanabi.getPioche());
 
-        //System.out.println(hanabi.getPioche() + "\n");
 
-        PolitiqueRandom politiqueRandom = new PolitiqueRandom();
+        //Créer les politiques des agents
         PolitiqueSimpleHanabi politiqueSimpleA1 = new PolitiqueSimpleHanabi(carteBase,generateur,true);
         PolitiqueSimpleHanabi politiqueSimpleA2 = new PolitiqueSimpleHanabi(carteBase,generateur,true);
 
         //Créer les agents
-        
         AgentHanabi a1 = new AgentHanabi(politiqueSimpleA1,"Alice",carteBase);
         AgentHanabi a2 = new AgentHanabi(politiqueSimpleA2,"Bob",carteBase);
         List<Agent<?>> agents = List.of(a1, a2);
@@ -64,8 +61,6 @@ public class MainHanabi{
             }
             mainsAgents.put(agent,mainAgent);
         }
-
-        //System.out.println(hanabi.getPioche() + "\n");
 
         //Créer le jeu
         JeuHanabi jeu = new JeuHanabi(hanabi,agents,mainsAgents);

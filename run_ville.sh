@@ -1,5 +1,4 @@
 #!/bin/bash
-
-javac -d out -sourcepath src src/**/*.java
-java -cp out ville.MainVille
+cd "$(dirname "$0")"
+mvn -q compile exec:java -Dexec.mainClass="ville.MainVille" 2>/dev/null
 

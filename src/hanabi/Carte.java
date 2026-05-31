@@ -1,7 +1,11 @@
 package hanabi;
 import java.util.*;
 
-public class Carte  implements Comparable<Carte> {
+/**
+ * Classe qui représente se qu'est une carte du jeu Hanabi,possède une valeur et une couleur
+ */
+
+public class Carte implements Comparable<Carte> {
     private int numero;
     private String couleur;
 

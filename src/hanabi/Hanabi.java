@@ -1,6 +1,10 @@
 package hanabi;
 import java.util.*;
 
+/**
+ * Classe qui représente un équivalent à une boite du jeu hanabi,dans laquelle on peux piocher,connaitre le nombre d'erreurs max avant la fin de la partie.
+ */
+
 public class Hanabi {
     private List<Carte> pioche;
     private Map<String,List<Integer>> nombreCarte = new HashMap<>();
@@ -56,7 +60,6 @@ public class Hanabi {
     public int getValeurMaxDeC(String c){
         return valeurMax.get(c);
     }
-
 
     public List<String> getListCouleur(){
         return new ArrayList<>(nombreCarte.keySet());

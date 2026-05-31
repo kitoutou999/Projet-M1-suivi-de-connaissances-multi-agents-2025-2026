@@ -2,6 +2,11 @@ package hanabi;
 import java.util.*;
 import core.*;
 
+/**
+ * Classe qui implémente ce qu'est un Etat dans le cadre du jeu Hanabi, il contient principalement les cartes de chaque agent, les cartes qui ont été jouées (piles de jeu), le nombre d'erreurs effectuées et l'agent qui joue au moment de l'état
+ */
+
+
 public class EtatHanabi implements Etat {
     private Map<Agent<?>, List<Carte>> mainsAgents;
     private Map<String, Deque<Carte>> jeu;

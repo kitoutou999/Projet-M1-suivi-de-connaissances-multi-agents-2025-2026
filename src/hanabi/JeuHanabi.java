@@ -2,6 +2,10 @@ package hanabi;
 import java.util.*;
 import core.*;
 
+/**
+ * Classe qui implémente un Jeu et ses méthodes pour la simulation de jeu Hanabi
+ */
+
 public class JeuHanabi extends Jeu {
 
     private final Hanabi hanabi;
@@ -44,6 +48,13 @@ public class JeuHanabi extends Jeu {
         return etatInitial;
     }
 
+
+    /**
+     * Adapte la classe isFinal de Jeu pour un JeuHanabi, qui regarde si un EtatHanabi est final ou non.
+     *
+     * @param etat Un Etat afin de dire si,pour hanabi,il est Final.
+     * @return Vrai si l'Etat est un etat final,faux sinon
+    */
     @Override
     public boolean isFinal(Etat etat) {
         EtatHanabi e = (EtatHanabi) etat;
@@ -54,6 +65,13 @@ public class JeuHanabi extends Jeu {
         return false;
     }
 
+    /**
+     * Adapte la classe nextState de Jeu pour un JeuHanabi, qui fait la transition entre un etat et le suivant en fonction des actions qui y ont été effectuées
+     *
+     * @param etat Un Etat afin d'en déduire l'etat suivant
+     * @param actions Des actions afin d'en déduire l'etat suivant
+     * @return Un nouvel EtatHanabi qui se crée en fonction de l'ancien État et des actions qui y ont été effectuées
+    */
     @Override
     public Etat nextState(Etat etat, ActionJointe actions) {
         EtatHanabi e = (EtatHanabi) etat;
@@ -128,6 +146,12 @@ public class JeuHanabi extends Jeu {
         return new EtatHanabi(newMainsAgents,newJeu,newNbErreur,agents.get(boucleJeu),this.hanabi.getPioche().size(),hanabi.getDefausse());
     }
 
+    /**
+     * Adapte la classe getActionsPossibles de Jeu pour un JeuHanabi, qui va pour agent lui attribuer une liste d'actions possibles à effectuer     *
+     * @param agent Un agent pour lui attribuer ses actions possibles
+     * @param etat Un Etat afin d'en extraire les agents qui le composent
+     * @return Une liste d'action possibles
+    */
     @Override
     public List<Action> getActionsPossibles(Agent<?> agent, Etat etat) {
         EtatHanabi e = (EtatHanabi) etat;

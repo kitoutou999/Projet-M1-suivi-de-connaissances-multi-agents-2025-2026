@@ -2,6 +2,10 @@ package hanabi;
 import java.util.*;
 import core.*;
 
+/**
+ * Classe qui implémente ce qu'est une Obervation dans le cadre du jeu Hanabi
+ */
+
 public class ObservationHanabi extends Observation {
 
     private final Map<Agent<?>, List<Carte>> mainsAutresAgents;

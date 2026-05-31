@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.Random;
 import core.*;
 
+/**
+* Classe qui implémente ce qu'est une Politique en une politique intelligente permetant à des agents d'obtenir de bons scores en jeu grâce à leurs croyances dans le cadre du jeu Hanabi 
+*/
 
 public class PolitiqueSimpleHanabi implements Politique {
 
@@ -50,6 +53,8 @@ public class PolitiqueSimpleHanabi implements Politique {
         }
     }
 
+
+    
     //Donne un score pour l'indice donnée en fonction des mains des agents(pour plus tard prendre le meilleur indice qui reduit un max les domaines)
     private int scoreIndice(Action indice, Agent<?> cible, List<Carte> mainCible){
         List<Set<Carte>> base = domainesAutres.get(cible); // ce que la cible croit avoir dans sa main

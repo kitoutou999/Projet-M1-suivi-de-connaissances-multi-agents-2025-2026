@@ -2,6 +2,10 @@ package hanabi;
 import java.util.*;
 import core.*;
 
+/**
+ * Classe qui implémente un Jeu et ses méthodes pour la simulation de jeu Hanabi
+ */
+
 public class JeuHanabi extends Jeu {
 
     private final Hanabi hanabi;

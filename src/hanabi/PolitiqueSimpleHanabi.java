@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.Random;
 import core.*;
 
+/**
+* Classe qui implémente ce qu'est une Politique en une politique intelligente permetant à des agents d'obtenir de bons scores en jeu grâce à leurs croyances dans le cadre du jeu Hanabi 
+*/
 
 public class PolitiqueSimpleHanabi implements Politique {
 

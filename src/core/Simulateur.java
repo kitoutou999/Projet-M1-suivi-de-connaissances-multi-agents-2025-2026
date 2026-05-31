@@ -2,7 +2,11 @@ package core;
 
 import java.util.List;
 
-
+/**
+ * Lance la boucle de simulation.
+ * À chaque tour : chaque agent choisit une action, l'état est mis à jour,
+ * puis chaque agent reçoit son observation et met à jour ses croyances si possible.
+ */
 public class Simulateur {
     private final Jeu jeu;
     private final List<Agent<?>> agents;
@@ -23,6 +27,7 @@ public class Simulateur {
         this.verbose = verbose;
     }
 
+    /** Lance la simulation jusqu'à ce que l'état soit final ou que le nombre maximum de tours soit atteint. */
     public Etat run(int maxStep) {
         Etat etatCourant = jeu.getInitialState();
         int step = 0;

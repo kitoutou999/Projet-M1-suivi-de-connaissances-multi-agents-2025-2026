@@ -4,10 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
+/**
+ * Regroupe les actions choisies par tous les agents pour un même tour.
+ * Passée à {@link Jeu#nextState} pour calculer l'état suivant.
+ */
 public class ActionJointe {
     private final Map<Agent<?>, Action> actions = new HashMap<>();
 
+    /** Associe une action à un agent pour ce tour. */
     public void addAction(Agent<?> agent, Action action) {
         actions.put(agent, action);
     }

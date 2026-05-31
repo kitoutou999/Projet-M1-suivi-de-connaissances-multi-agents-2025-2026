@@ -2,8 +2,20 @@ package core;
 
 import java.util.*;
 
+/**
+ * Filtre utilisé par le {@link BeliefState} pour mettre à jour les croyances d'un agent.
+ * Génère toutes les transitions possibles depuis un état et détermine lesquelles
+ * sont compatibles avec une observation réelle.
+ *
+ * @param <E> le type d'état du jeu
+ */
 public class BeliefStateFilter<E extends Etat> {
 
+    /**
+     * Génère l'ensemble des transitions possibles depuis un état donné.
+     * L'action de l'agent observateur est fixée ; les actions des autres agents
+     * couvrent toutes leurs actions disponibles.
+     */
     public Set<Transition<E>> transitions(E etat, Jeu jeu, List<Agent<?>> tousLesAgents, Agent<?> observateur, Action actionPropre) {
         List<List<Map.Entry<Agent<?>, Action>>> listes = new ArrayList<>();
         for (Agent<?> agent : tousLesAgents) {
@@ -24,6 +36,10 @@ public class BeliefStateFilter<E extends Etat> {
         return result;
     }
 
+    /**
+     * Vérifie si une transition est compatible avec l'observation réelle de l'agent,
+     * en simulant l'observation qu'il aurait reçue et en la comparant à celle effectivement reçue.
+     */
     public boolean estCompatible(Transition<E> t, Agent<?> observateur, Observation obsReelle, Jeu jeu, int step) {
         Observation obsSim = jeu.simulerObservation(observateur, t, step);
         return obsSim.equals(obsReelle);

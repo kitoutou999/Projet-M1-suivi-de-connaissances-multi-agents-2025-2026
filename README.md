@@ -1,14 +1,41 @@
-Projet de :
-Pasquier Titouan
-David Tom
-Guillais Marius
-Chepy Maxim
+# Projet Suivi de Connaissances Multi-Agents
 
-Etapes pour ajouter un jeu :
+Academic project (M1) — a multi-agent framework where each agent maintains a belief state and tracks knowledge of other agents.
 
-1. Implémenter Jeu : définir getInitialState, isFinal, nextState, getActionsPossibles, makeObservation,
-   simulerObservation
-2. Définir un Etat : une classe qui représente l'état du jeu
-3. Définir des Actions et une Observation avec son equals()
-4. Implémenter une Politique : chooseAction(Agent<?>, Historique, List<Action>)
-5. Créer un Main : instancier les agents avec leurs politiques, créer le Simulateur avec la liste d'agents
+Applied to two games: **Hanabi** (cooperative card game) and a **city simulation**.
+
+## Architecture
+
+| Component | Description |
+|---|---|
+| `Simulateur` | Runs the game loop and dispatches observations |
+| `Agent` | Holds a `BeliefState` and chooses actions via a `Politique` |
+| `BeliefStateFilter` | Updates beliefs based on observations |
+| `Jeu` | Defines initial state, transitions, and terminal conditions |
+
+## Adding a New Game
+
+1. Implement `Jeu`: define `getInitialState`, `isFinal`, `nextState`, `getActionsPossibles`, `makeObservation`
+2. Define an `Etat` class
+3. Define `Action` and `Observation` (with `equals()`)
+4. Implement a `Politique`: `chooseAction(Agent, Historique, List<Action>)`
+5. Create a `Main` that instantiates agents and the `Simulateur`
+
+## Run
+
+```bash
+# Hanabi (good score)
+./run_hanabi.sh
+
+# City simulation
+./run_ville.sh
+```
+
+## Requirements
+
+- Java 17+
+- Maven (`pom.xml` provided)
+
+## Authors
+
+Tom David, Titouan Pasquier, Marius Guillais, Maxim Chepy

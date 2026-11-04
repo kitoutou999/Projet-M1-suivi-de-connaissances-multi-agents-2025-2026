@@ -1,41 +1,49 @@
-# Projet Suivi de Connaissances Multi-Agents
+# Multi-agent knowledge tracking
 
-Academic project (M1) — a multi-agent framework where each agent maintains a belief state and tracks knowledge of other agents.
+An M1 multi-agent systems project (2025–2026) in Java, applied to Hanabi and a city rendezvous problem. Agents use partial observations and models of other agents' knowledge to choose hints, routes and messages.
 
-Applied to two games: **Hanabi** (cooperative card game) and a **city simulation**.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/hanabi-scores-dark.svg">
+  <img src=".github/assets/hanabi-scores-light.svg" width="100%" alt="Hanabi scores reported over 20,000 games: best 25, mean 18.55 and worst 5, out of 25">
+</picture>
 
-## Architecture
+## Results
 
-| Component | Description |
+| Scenario | Observed result |
 |---|---|
-| `Simulateur` | Runs the game loop and dispatches observations |
-| `Agent` | Holds a `BeliefState` and chooses actions via a `Politique` |
-| `BeliefStateFilter` | Updates beliefs based on observations |
-| `Jeu` | Defines initial state, transitions, and terminal conditions |
+| Hanabi, seed `7950951865960141691` | 25/25, no errors, 6 cards left in the deck |
+| Hanabi, seed `-7009734669824303062` | 5/25, no errors, deck exhausted |
+| Default city scenario | All 3 agents reach `RDV` after 6 steps, with 1 message left at `Shared` |
 
-## Adding a New Game
+The [semester 2 report](rendu/Projet_Agents_S2.pdf), section 2.2.4, reports a mean of 18.55/25 over 20,000 games. The two seeded results above reproduce its best and worst examples; the full benchmark is not included as a runnable script.
 
-1. Implement `Jeu`: define `getInitialState`, `isFinal`, `nextState`, `getActionsPossibles`, `makeObservation`
-2. Define an `Etat` class
-3. Define `Action` and `Observation` (with `equals()`)
-4. Implement a `Politique`: `chooseAction(Agent, Historique, List<Action>)`
-5. Create a `Main` that instantiates agents and the `Simulateur`
+## Getting started
 
-## Run
+Requires Bash, JDK 17 or later and Maven. The simulations print their states and actions in the terminal.
 
 ```bash
-# Hanabi (good score)
-./run_hanabi.sh
-
-# City simulation
-./run_ville.sh
+bash run_hanabi.sh
+bash run_ville.sh
+bash scripts/hanabi/bonscore.sh
+bash scripts/hanabi/pirescore.sh
 ```
 
-## Requirements
+`run_hanabi.sh` uses a random seed; the last two scripts replay the seeds in the results table. `run_ville.sh` runs the mixed second-order reasoning scenario: Alice discovers a closure and leaves a message that helps Bob avoid it, while Charlie follows a separate route.
 
-- Java 17+
-- Maven (`pom.xml` provided)
+## How it works
 
-## Authors
+| Package | Role |
+|---|---|
+| `src/core/` | Simulation loop, joint actions, histories, policies and compatible-state filtering |
+| `src/hanabi/` | Card domains, safe plays, discards and hints chosen to reduce another agent's uncertainty |
+| `src/ville/` | Graph navigation with BFS, local messages and beliefs about other agents' positions and knowledge |
 
-Tom David, Titouan Pasquier, Marius Guillais, Maxim Chepy
+Each step collects actions, advances the game, then distributes observations. City agents can use `BeliefState`; Hanabi tracks per-card domains inside `PolitiqueSimpleHanabi` instead. To add a scenario, implement `Jeu`, state, actions, observations and a policy, including simulated observations for belief filtering.
+
+## Limitations
+
+Hanabi does not limit hint tokens and stops immediately when the deck is empty. Its scores therefore describe this implementation's rules. The simulations run in the console: the visual tools and benchmark classes mentioned in the generated Javadoc are not in `src/`.
+
+## Credits
+
+Tom David, Titouan Pasquier, Marius Guillais and Maxim Chepy. Reports for both semesters are in [rendu/](rendu/).
